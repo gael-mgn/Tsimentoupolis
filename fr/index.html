@@ -159,7 +159,7 @@
         // remonter d'un niveau
         segs.pop();
         // ajouter dossier langue + index.html
-        segs.push(lang);
+        segs.push('../'+lang);
         segs.push('index.html');
         var targetPath = segs.join('/');
         if (!targetPath.startsWith('/')) targetPath = '/' + targetPath;
@@ -275,7 +275,14 @@
     .compare-btn{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:0.5rem 0.6rem;border-radius:8px;font-size:0.9rem}
 
     /* COUNTDOWN LARGE */
-    .count-big{display:flex;gap:1rem;align-items:center;justify-content:center}
+   .count-big {
+  display: flex;
+  flex-wrap: wrap; /* permet le retour à la ligne */
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
     .count-seg{background:rgba(0,0,0,0.03);padding:1rem 1.1rem;border-radius:10px;min-width:88px;text-align:center}
     .count-num{font-weight:800;font-size:1.6rem;letter-spacing:0.01em;color:var(--text)}
     .count-label{font-size:0.75rem;opacity:0.8;color:var(--muted)}
@@ -374,7 +381,7 @@
             <div class="card">
               <div class="video-wrap">
                 <!-- Remplacez l'URL par l'iframe YouTube/Vimeo réel -->
-                <iframe src="https://player.vimeo.com/video/000000000?badge=0" title="Épisode 1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                <iframe src="https://player.vimeo.com/video/1119188178?badge=0" title="Épisode 1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
               </div>
               <p class="muted" style="margin-top:1rem">Un film de 7 minutes. Sans voix-off, sans explication. Juste la ville, ses routes, ses jardins, ses bruits. Une archive visuelle qui attend son futur miroir.</p>
             </div>
