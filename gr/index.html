@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tsimentoupolis → Polis Prasini — Page projet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Leaflet (carte interactive) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+e2kD1v3Qm3d2y4j0w2kQf5HfB6pG1wqgJC1Gk0r0=" crossorigin=""/>
+
+  <script>
+(function () {
+  // --- CONFIG: récupère les options depuis le script tag (ou valeurs par défaut) ---
+  var s = document.currentScript || (function(){var a=document.getElementsByTagName('script'); return a[a.length-1];})();
+  var rawLabels = (s && s.getAttribute('data-labels')) || 'One|Two|Three';
+  var labels = rawLabels.split('|').map(function(l){ return l.trim(); }).slice(0,3);
+  while (labels.length < 3) labels.push('Btn');
+  var rawHrefs = (s && s.getAttribute('data-hrefs')) || '';
+  var hrefs = rawHrefs ? rawHrefs.split('|').map(function(h){ return h.trim(); }) : [];
+  var orientation = (s && s.getAttribute('data-orientation')) || 'vertical'; // 'vertical' or 'horizontal'
+  var containerId = 'trb-container-' + Math.random().toString(36).slice(2,9);
+
+  // --- INSÈRE LES STYLES ---
+  var css = '\
+  /* Top-right buttons - injected by script */\
+  #'+containerId+'{position:fixed;top:1rem;right:1rem;z-index:2147483647;display:flex;flex-direction:'+(orientation==='horizontal'?'row':'column')+';gap:0.5rem;align-items:center;}\
+  #'+containerId+' .trb-btn{appearance:none;border:0;padding:0.45rem 0.9rem;border-radius:10px;background:var(--trb-bg,#111);color:var(--trb-color,#fff);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;font-size:0.95rem;cursor:pointer;box-shadow:0 6px 18px rgba(15,15,15,0.25);backdrop-filter:blur(6px);transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;}\
+  #'+containerId+' .trb-btn:focus{outline:3px solid rgba(100,150,255,0.22);outline-offset:3px;transform:translateY(-2px);}\
+  #'+containerId+' .trb-btn:hover{transform:translateY(-3px);}\
+  #'+containerId+' .trb-btn:active{transform:translateY(0);}\
+  #'+containerId+' .trb-link{display:inline-block;text-decoration:none;color:inherit;}\
+  /* Compact on very small screens: collapse to a single icon button */\
+  @media (max-width:420px){\
+    #'+containerId+'{gap:0.35rem;right:0.6rem;top:0.6rem;}\
+    #'+containerId+' .trb-btn[data-index]:not([data-index="0"]){display:none;}\
+    #'+containerId+' .trb-btn{padding:0.45rem 0.7rem;border-radius:9px;}\
+  }';
+
+  var styleEl = document.createElement('style');
+  styleEl.setAttribute('data-for', 'topright-buttons');
+  styleEl.appendChild(document.createTextNode(css));
+  document.head.appendChild(styleEl);
+
+  // --- CRÉE LE CONTENEUR + BOUTONS LORSQUE DOM READY ---
+  function build() {
+    if (document.getElementById(containerId)) return;
+    var container = document.createElement('div');
+    container.id = containerId;
+    container.setAttribute('role', 'toolbar');
+    container.setAttribute('aria-label', 'Outils en haut à droite');
+
+    labels.forEach(function (label, idx) {
+      var idxStr = String(idx);
+      var isLink = !!hrefs[idx];
+      var el;
+      if (isLink) {
+        el = document.createElement('a');
+        el.href = hrefs[idx];
+        el.setAttribute('target','_self');
+        el.className = 'trb-link';
+      } else {
+        el = document.createElement('button');
+        el.type = 'button';
+      }
+      el.className = 'trb-btn';
+      el.setAttribute('data-index', idxStr);
+      el.setAttribute('aria-label', label);
+      el.textContent = label;
+
+      // Keyboard: Enter / Space already handled for button and <a> by browser.
+      // Click handler -> dispatch custom event
+      el.addEventListener('click', function (ev) {
+        // If it's a link, let navigation happen but still dispatch event first.
+        var payload = { index: idx, label: label, element: el, originalEvent: ev };
+        window.dispatchEvent(new CustomEvent('topright:click', { detail: payload }));
+      }, { passive: true });
+
+      container.appendChild(el);
+    });
+
+    document.body.appendChild(container);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', build);
+  } else {
+    build();
+  }
+
+  // --- Expose une petite API globale optionnelle ---
+  window.TopRightButtons = {
+    getContainer: function(){ return document.getElementById(containerId); },
+    setLabels: function(arr){ labels = arr.slice(0,3); if(document.getElementById(containerId)){ document.getElementById(containerId).querySelectorAll('.trb-btn').forEach(function(b,i){ b.textContent = labels[i] || 'Btn'; b.setAttribute('aria-label', labels[i] || 'Btn'); }); } },
+    click: function(i){ var el = document.getElementById(containerId) && document.getElementById(containerId).querySelector('[data-index="'+String(i)+'"]'); if(el) el.click(); }
+  };
+
+})();
+</script>
+
+  <!-- Inline theme init to avoid FOUC -->
+  <script>
+    (function(){
+      try{
+        var saved = localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      }catch(e){/* silent */}
+    })();
+  </script>
+
+  <style>
+    /* Base: light theme variables */
+    :root{
+      --max-width: 1200px;
+      color-scheme: light;
+      --bg: #050505;
+      --surface: #0b0b0b;
+      --card: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      --muted: rgba(255,255,255,0.9);
+      --text: #f5f5f5;
+      --accent: #e6c07b;
+      --glass: rgba(255,255,255,0.06);
+      --overlay: rgba(0,0,0,0.45);
+      color-scheme: dark;
+    }
+
+    /* Quick transitions for theme-aware properties */
+    :root, [data-theme="dark"] {
+      transition: background-color 220ms ease, color 220ms ease;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:'Inter',system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg);color:var(--text)}
+    a{color:inherit}
+    .container{max-width:var(--max-width);margin:0 auto;padding:2rem}
+
+
+
+    /* HERO */
+    .hero{
+      position:relative;
+      min-height:80vh;
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden;
+      background:linear-gradient(180deg,var(--overlay),transparent), url('assets/hero-still.jpg') center/cover no-repeat;
+    }
+    .hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));mix-blend-mode:overlay}
+    .hero-inner{position:relative;z-index:2;text-align:center;padding:3rem;max-width:980px}
+    h1{font-size:clamp(2.6rem,4.5vw,3.4rem);margin:0 0 0.5rem;line-height:1.03;font-weight:800;letter-spacing:-0.01em; 
+    font-family:'playfair display',system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text)}
+    p.lead{margin:1.2rem 0 1.2rem;font-weight:300;font-size:1.05rem;opacity:0.95; font-family:'playfair display',system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--muted)}
+    .cta-row{display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap}
+    .btn{
+      background:linear-gradient(90deg,var(--accent),color-mix(in srgb, var(--accent) 80%, white));
+      padding:0.9rem 1.4rem;border-radius:999px;color:var(--bg);font-weight:700;text-decoration:none;display:inline-block;box-shadow:0 6px 18px rgba(0,0,0,0.08)
+    }
+    .count-small{font-variant-numeric:tabular-nums;background:var(--glass);padding:0.6rem 0.9rem;border-radius:10px;font-weight:600;color:var(--muted)}
+
+    /* SECTIONS */
+    section{padding:4rem 0;border-top:1px solid rgba(0,0,0,0.05)}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:2.2rem;align-items:start}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.hero{min-height:70vh}.container{padding:1rem}}
+
+    .card{background:var(--card);padding:1.4rem;border-radius:12px;color:var(--muted)}
+    .muted{color:var(--muted);line-height:1.6}
+
+    /* VIDEO */
+    .video-wrap{position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden}
+    .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+    /* MAP */
+    #map{height:420px;border-radius:10px;overflow:hidden}
+    .places-list{display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem}
+    .place{display:flex;gap:0.8rem;align-items:center;padding:0.6rem;border-radius:8px;background:rgba(0,0,0,0.03)}
+    .place img{width:84px;height:56px;object-fit:cover;border-radius:6px}
+    .compare-btn{background:transparent;border:1px solid rgba(0,0,0,0.06);padding:0.5rem 0.6rem;border-radius:8px;font-size:0.9rem}
+
+    /* COUNTDOWN LARGE */
+    .count-big{display:flex;gap:1rem;align-items:center;justify-content:center}
+    .count-seg{background:rgba(0,0,0,0.03);padding:1rem 1.1rem;border-radius:10px;min-width:88px;text-align:center}
+    .count-num{font-weight:800;font-size:1.4rem;letter-spacing:0.01em;color:var(--text)}
+    .count-label{font-size:0.75rem;opacity:0.8;color:var(--muted)}
+
+    /* MODAL compare */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:999}
+    .modal.show{display:flex}
+    .modal-card{width:92%;max-width:1100px;background:var(--surface);border-radius:12px;padding:1rem}
+    .slider-wrap{position:relative;height:480px;border-radius:8px;overflow:hidden;background:#111}
+    .slider-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .slider-top{width:50%;overflow:hidden}
+    .slider-divider{position:absolute;left:50%;top:0;bottom:0;width:3px;background:linear-gradient(180deg,transparent,#fff,transparent);transform:translateX(-50%)}
+    .slider-handle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:var(--accent);box-shadow:0 6px 18px rgba(0,0,0,0.5);border:4px solid rgba(0,0,0,0.4)}
+    .modal-close{float:right;background:transparent;border:0;color:#666;font-size:1rem}
+
+    footer{padding:2rem 0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+
+    h2 {
+      font-size: 1.8rem;
+       font-family:'playfair display',system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);
+    }
+
+    /* small helpers */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+
+
+  <main>
+    <header class="hero">
+      <div class="hero-inner container">
+        <h1>Athènes peut-elle passer de <em>Tsimentoupolis</em> à une cité verte ?</h1>
+        <p class="lead">Un documentaire en deux temps. 2025 – 2035.</p>
+        <div class="cta-row">
+          <a class="btn" id="watch-btn" href="#film" role="button" aria-label="Voir le film">Voir le film</a>
+          <div class="count-small" aria-live="polite">Prochain épisode dans : <span id="hero-count">— ans — mois — jours — -- h</span></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Le projet -->
+      <section id="projet">
+        <div class="grid">
+          <div>
+            <h2>Le projet</h2>
+            <div class="card muted">
+              <p><strong>Tsimentoupolis.</strong><br>
+              C’est ainsi qu’on surnomme Athènes : une capitale de ciment, minérale, étouffante sous les chaleurs estivales.</p>
+              <p>En 2024, la municipalité s’est engagée à transformer ce paysage en plantant 25 000 arbres d’ici 2028.</p>
+              <p>Ce documentaire en deux parties capture cette métamorphose.</p>
+              <ul>
+                <li><strong>Épisode 1 (2025)</strong> : Athènes au seuil de la transformation.</li>
+                <li><strong>Épisode 2 (2035)</strong> : la ville de demain, filmée dans les mêmes lieux, avec les mêmes cadrages.</li>
+              </ul>
+              <p>Entre les deux, dix années de croissance, d’espoir… ou de désillusion.</p>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <h3>À la une</h3>
+              <p class="muted">Suivez le projet année après année. Des ressources, des entretiens et des données viendront enrichir cette page.</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Le film -->
+      <section id="film">
+        <div class="grid">
+          <div>
+            <h2>Le film</h2>
+            <div class="card">
+              <div class="video-wrap">
+                <!-- Remplacez l'URL par l'iframe YouTube/Vimeo réel -->
+                <iframe src="https://player.vimeo.com/video/000000000?badge=0" title="Épisode 1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+              </div>
+              <p class="muted" style="margin-top:1rem">Un film de 7 minutes. Sans voix-off, sans explication. Juste la ville, ses routes, ses jardins, ses bruits. Une archive visuelle qui attend son futur miroir.</p>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <h3>Fiche technique</h3>
+              <p class="muted"><strong>Durée</strong> : 7 min<br>
+              <strong>Format</strong> : Plans fixes — mêmes lieux, mêmes cadrages<br>
+              <strong>Langue</strong> : muet / ambiances</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Question directrice -->
+      <section id="question">
+        <h2>La question directrice</h2>
+        <div class="card muted">
+          <p><em>“Athènes peut-elle passer de Tsimentoupolis à une cité verte ?”</em></p>
+          <p>Autour de ce film s’articule une enquête élargie : données sur la pollution et la chaleur urbaine, entretiens avec habitants, urbanistes et chercheurs.</p>
+          <p>Ces ressources seront progressivement enrichies, au fil des années, jusqu’à la sortie de l’épisode 2.</p>
+        </div>
+      </section>
+
+      <!-- Suivi visuel (carte) -->
+      <!--<section id="suivi">
+        <div class="grid">
+          <div>
+            <h2>Le suivi visuel</h2>
+            <p class="muted">Chaque plan du film est une archive. Ici, vous pouvez suivre l’évolution des lieux filmés, au rythme des saisons et des années.</p>
+            <div id="map" class="card"></div>
+            <div class="places-list" id="places-list"></div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <h3>Comparaison</h3>
+              <p class="muted">Cliquez sur une vignette pour ouvrir la vue comparative (2025 / 2035). L’épisode 2 alimentera automatiquement la bibliothèque d’images quand il sera disponible.</p>
+            </div>
+          </aside>
+        </div>
+      </section>-->
+
+      <!-- Compte à rebours mise en avant -->
+      <section id="compte">
+        <div class="card" style="text-align:center">
+          <h2>Épisode 2 – sortie prévue en 2035</h2>
+          <p class="muted">Il reste :</p>
+          <div class="count-big" id="countdown">
+            <div class="count-seg"><div class="count-num" id="yrs">—</div><div class="count-label">ans</div></div>
+            <div class="count-seg"><div class="count-num" id="mos">—</div><div class="count-label">mois</div></div>
+            <div class="count-seg"><div class="count-num" id="dys">—</div><div class="count-label">jours</div></div>
+            <div class="count-seg"><div class="count-num" id="hrs">—</div><div class="count-label">heures</div></div>
+          </div>
+          <p class="muted" style="margin-top:1rem">Le temps est le cœur de ce projet. Un temps long, celui de la nature. Ce compte à rebours marque l’attente d’une réponse : Athènes sera-t-elle devenue une cité verte ?</p>
+        </div>
+      </section>
+
+      <!-- À propos -->
+      <section id="about">
+        <h2>À propos</h2>
+        <div class="card muted">
+          <p><strong>Auteur / Réalisateur :</strong> <a href="https://www.linkedin.com/in/gael-maignan/">Gaël Maignan</a></p>
+          <p>Ce projet est à la fois un film et une archive. Il cherche à interroger notre rapport au temps, à l’urbanisme, au climat. Il ne propose pas de discours, mais une observation patiente : filmer, attendre, puis revenir.</p>
+        </div>
+      </section>
+
+    </div>
+
+    <footer>
+      © <span id="year"></span> Tsimentoupolis → Polis Prasini — Projet documentaire
+    </footer>
+  </main>
+
+  <!-- Modal compare -->
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" id="modal-close" aria-label="Fermer">✕</button>
+      <div class="slider-wrap" id="slider-wrap">
+        <img src="assets/placeholder-2035.jpg" alt="2035 (prévision)" id="img-bottom">
+        <div class="slider-top" id="slider-top"><img src="assets/placeholder-2025.jpg" alt="2025 (extrait film)" id="img-top"></div>
+        <div class="slider-divider"></div>
+        <div class="slider-handle" id="slider-handle" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <p class="muted" style="margin-top:0.6rem" id="modal-caption">Lieu — coordonnées : --</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j8fT0f7k6QfI6s0z6Kp9N1sVb3mQm9o3p2w5r0U=" crossorigin=""></script>
+  <script>
+    // CONFIG
+    const episode1URL = '#film'; // remplacer par l'URL de streaming réel
+    // Target date pour l'épisode 2 (format ISO). Par défaut, calculé pour correspondre au texte exemple.
+    const targetDateStr = '2035-09-13T00:00:00+03:00';
+
+    document.getElementById('watch-btn').href = episode1URL;
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // COUNTDOWN
+    const targetDate = new Date(targetDateStr);
+    const heroCount = document.getElementById('hero-count');
+    const yrsEl = document.getElementById('yrs');
+    const mosEl = document.getElementById('mos');
+    const dysEl = document.getElementById('dys');
+    const hrsEl = document.getElementById('hrs');
+
+    function updateCountdown(){
+      const now = new Date();
+      // difference in milliseconds
+      let diff = targetDate - now;
+      if (diff <= 0) { heroCount.textContent = 'Disponible'; yrsEl.textContent='0'; mosEl.textContent='0'; dysEl.textContent='0'; hrsEl.textContent='0'; return; }
+
+      // compute years, months, days approx by using dates
+      // We'll compute full years/months/days using calendar math
+      let yNow = now.getFullYear(), mNow = now.getMonth(), dNow = now.getDate();
+      let yT = targetDate.getFullYear(), mT = targetDate.getMonth(), dT = targetDate.getDate();
+
+      let years = yT - yNow;
+      let months = mT - mNow;
+      let days = dT - dNow;
+      // adjust
+      if (days < 0){
+        const prevMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
+        days += new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+        months -= 1;
+      }
+      if (months < 0){months += 12; years -= 1}
+
+      // hours remaining in the current day
+      const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+
+      heroCount.textContent = years.toString().padStart(2,'0') + ' ans – ' + months.toString().padStart(2,'0') + ' mois – ' + days.toString().padStart(2,'0') + ' jours – ' + hours.toString().padStart(2,'0') + ' h';
+      yrsEl.textContent = String(years).padStart(2,'0');
+      mosEl.textContent = String(months).padStart(2,'0');
+      dysEl.textContent = String(days).padStart(2,'0');
+      hrsEl.textContent = String(hours).padStart(2,'0');
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 60*1000);
+
+    // LEAFLET MAP + sample places
+    const places = [
+      {id:1,title:'Rue X — Extrait 1',lat:37.9838,lon:23.7275,img2025:'assets/placeholder-2025.jpg',img2035:'assets/placeholder-2035.jpg'},
+      {id:2,title:'Place Y — Extrait 3',lat:37.9755,lon:23.7340,img2025:'assets/placeholder-2025.jpg',img2035:'assets/placeholder-2035.jpg'}
+    ];
+
+    const map = L.map('map',{scrollWheelZoom:false}).setView([37.9838,23.7275],13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+
+    function openCompare(place){
+      document.getElementById('img-top').src = place.img2025 || 'assets/placeholder-2025.jpg';
+      document.getElementById('img-bottom').src = place.img2035 || 'assets/placeholder-2035.jpg';
+      document.getElementById('modal-caption').textContent = place.title + ' — ' + (place.lat.toFixed(5)) + ', ' + (place.lon.toFixed(5));
+      document.getElementById('modal').classList.add('show');
+      document.getElementById('modal').setAttribute('aria-hidden','false');
+      // reset slider
+      setSliderPercent(50);
+    }
+
+    places.forEach(p => {
+      const marker = L.marker([p.lat,p.lon]).addTo(map).bindPopup(`<strong>${p.title}</strong><br><small>${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</small><br><button class='compare-btn' data-id='${p.id}'>Comparer 2025 / 2035</button>`);
+      // list
+      const list = document.getElementById('places-list');
+      const el = document.createElement('div'); el.className='place';
+      el.innerHTML = `<img src='${p.img2025}' alt='${p.title}'> <div style='flex:1'><strong>${p.title}</strong><div class='muted' style='font-size:0.9rem'>${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</div></div><div><button class='compare-btn' data-id='${p.id}'>Comparer</button></div>`;
+      list.appendChild(el);
+    });
+
+    // Delegate compare button clicks (map popups are in DOM after click)
+    document.body.addEventListener('click', e => {
+      const btn = e.target.closest('.compare-btn');
+      if (!btn) return;
+      const id = btn.getAttribute('data-id');
+      const place = places.find(x=>String(x.id)===String(id));
+      if (place) openCompare(place);
+    });
+
+    // MODAL slider logic
+    const modal = document.getElementById('modal');
+    const modalClose = document.getElementById('modal-close');
+    const sliderTop = document.getElementById('slider-top');
+    const sliderHandle = document.getElementById('slider-handle');
+    const sliderWrap = document.getElementById('slider-wrap');
+
+    function setSliderPercent(pct){
+      pct = Math.max(0,Math.min(100,pct));
+      sliderTop.style.width = pct + '%';
+      sliderHandle.style.left = pct + '%';
+      sliderHandle.setAttribute('aria-valuenow', Math.round(pct));
+      document.querySelector('.slider-divider').style.left = pct + '%';
+    }
+
+    let dragging=false;
+    function startDrag(e){dragging=true;document.body.style.userSelect='none'}
+    function endDrag(e){dragging=false;document.body.style.userSelect='auto'}
+    function doDrag(e){if(!dragging) return; const rect = sliderWrap.getBoundingClientRect(); const x = (e.touches? e.touches[0].clientX : e.clientX) - rect.left; const pct = (x/rect.width)*100; setSliderPercent(pct)}
+
+    sliderHandle.addEventListener('mousedown', startDrag); window.addEventListener('mouseup', endDrag); window.addEventListener('mousemove', doDrag);
+    sliderHandle.addEventListener('touchstart', startDrag); window.addEventListener('touchend', endDrag); window.addEventListener('touchmove', doDrag);
+
+    // keyboard support
+    sliderHandle.addEventListener('keydown', e => {
+      let cur = parseInt(sliderHandle.getAttribute('aria-valuenow')||50,10);
+      if (e.key === 'ArrowLeft') setSliderPercent(cur-2);
+      if (e.key === 'ArrowRight') setSliderPercent(cur+2);
+    });
+
+    modalClose.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true')});
+    modal.addEventListener('click', (e)=>{ if (e.target===modal) { modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); } });
+
+    // initial slider position
+    setSliderPercent(50);
+
+    // THEME TOGGLE LOGIC
+    (function(){
+
+    })();
+
+    // Fallback for when JS is disabled: show basic info
+  </script>
+</body>
+</html>
