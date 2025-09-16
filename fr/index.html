@@ -13,74 +13,167 @@
   <!-- Leaflet (carte interactive) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+e2kD1v3Qm3d2y4j0w2kQf5HfB6pG1wqgJC1Gk0r0=" crossorigin=""/>
 
-  <script>
-(function () {
-  // --- CONFIG: récupère les options depuis le script tag (ou valeurs par défaut) ---
-  var s = document.currentScript || (function(){var a=document.getElementsByTagName('script'); return a[a.length-1];})();
-  var rawLabels = (s && s.getAttribute('data-labels')) || 'One|Two|Three';
-  var labels = rawLabels.split('|').map(function(l){ return l.trim(); }).slice(0,3);
-  while (labels.length < 3) labels.push('Btn');
-  var rawHrefs = (s && s.getAttribute('data-hrefs')) || '';
-  var hrefs = rawHrefs ? rawHrefs.split('|').map(function(h){ return h.trim(); }) : [];
-  var orientation = (s && s.getAttribute('data-orientation')) || 'vertical'; // 'vertical' or 'horizontal'
-  var containerId = 'trb-container-' + Math.random().toString(36).slice(2,9);
+  <script type="module" src="https://gael-mgn.github.io/js/log.js"></script>
 
-  // --- INSÈRE LES STYLES ---
+
+<script>
+(function () {
+  var s = document.currentScript || (function(){var a=document.getElementsByTagName('script'); return a[a.length-1];})();
+  var rawLabels = (s && s.getAttribute('data-labels')) || 'Français|English|Ελληνικά';
+  var rawCodes  = (s && s.getAttribute('data-codes'))  || 'fr|en|gr';
+  var labels = rawLabels.split('|').map(function(l){ return l.trim(); }).slice(0,3);
+  var codes  = rawCodes.split('|').map(function(c){ return c.trim().toLowerCase(); }).slice(0,3);
+  while (labels.length < 3) labels.push('Lang');
+  while (codes.length  < 3) codes.push('xx');
+  var containerId = 'tr-lang-flag-' + Math.random().toString(36).slice(2,9);
+
+  // styles (horizontal)
   var css = '\
-  /* Top-right buttons - injected by script */\
-  #'+containerId+'{position:fixed;top:1rem;right:1rem;z-index:2147483647;display:flex;flex-direction:'+(orientation==='horizontal'?'row':'column')+';gap:0.5rem;align-items:center;}\
-  #'+containerId+' .trb-btn{appearance:none;border:0;padding:0.45rem 0.9rem;border-radius:10px;background:var(--trb-bg,#111);color:var(--trb-color,#fff);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;font-size:0.95rem;cursor:pointer;box-shadow:0 6px 18px rgba(15,15,15,0.25);backdrop-filter:blur(6px);transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;}\
-  #'+containerId+' .trb-btn:focus{outline:3px solid rgba(100,150,255,0.22);outline-offset:3px;transform:translateY(-2px);}\
-  #'+containerId+' .trb-btn:hover{transform:translateY(-3px);}\
-  #'+containerId+' .trb-btn:active{transform:translateY(0);}\
-  #'+containerId+' .trb-link{display:inline-block;text-decoration:none;color:inherit;}\
-  /* Compact on very small screens: collapse to a single icon button */\
-  @media (max-width:420px){\
-    #'+containerId+'{gap:0.35rem;right:0.6rem;top:0.6rem;}\
-    #'+containerId+' .trb-btn[data-index]:not([data-index="0"]){display:none;}\
-    #'+containerId+' .trb-btn{padding:0.45rem 0.7rem;border-radius:9px;}\
-  }';
+  #'+containerId+'{position:fixed;top:1rem;right:1rem;z-index:2147483647;display:flex;flex-direction:row;gap:0.5rem;align-items:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}\
+  #'+containerId+' .tr-btn{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:6px;border-radius:10px;background:rgba(11,18,32,0.9);border:0;cursor:pointer;box-shadow:0 6px 18px rgba(15,15,15,0.22);transition:transform .12s ease, box-shadow .12s ease;}\
+  #'+containerId+' .tr-btn:focus{outline:3px solid rgba(100,150,255,0.22);outline-offset:3px;transform:translateY(-2px);}\
+  #'+containerId+' .tr-btn:hover{transform:translateY(-3px);}\
+  #'+containerId+' svg{width:28px;height:20px;display:block;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,0.15);}\
+  /* petit affichage : ne garder que le 1er bouton */\
+  @media (max-width:420px){#'+containerId+'{gap:0.35rem;right:0.6rem;top:0.6rem;} #'+containerId+' .tr-btn[data-index]:not([data-index="0"]){display:none;} }';
 
   var styleEl = document.createElement('style');
-  styleEl.setAttribute('data-for', 'topright-buttons');
+  styleEl.setAttribute('data-for','topright-lang-flag');
   styleEl.appendChild(document.createTextNode(css));
   document.head.appendChild(styleEl);
 
-  // --- CRÉE LE CONTENEUR + BOUTONS LORSQUE DOM READY ---
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // Generator functions pour drapeaux simples
+  function flagFR() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 3 2');
+    // bleu
+    var r1 = document.createElementNS(SVG_NS,'rect'); r1.setAttribute('x','0'); r1.setAttribute('y','0'); r1.setAttribute('width','1'); r1.setAttribute('height','2'); r1.setAttribute('fill','#0055A4');
+    // blanc
+    var r2 = document.createElementNS(SVG_NS,'rect'); r2.setAttribute('x','1'); r2.setAttribute('y','0'); r2.setAttribute('width','1'); r2.setAttribute('height','2'); r2.setAttribute('fill','#FFFFFF');
+    // rouge
+    var r3 = document.createElementNS(SVG_NS,'rect'); r3.setAttribute('x','2'); r3.setAttribute('y','0'); r3.setAttribute('width','1'); r3.setAttribute('height','2'); r3.setAttribute('fill','#EF4135');
+    svg.appendChild(r1); svg.appendChild(r2); svg.appendChild(r3);
+    return svg;
+  }
+
+  function flagGR() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 15 10');
+    // 9 bandes bleues/blanches (approx)
+    for (var i=0;i<9;i++){
+      var r = document.createElementNS(SVG_NS,'rect');
+      r.setAttribute('x','0'); r.setAttribute('y', (i*(10/9)).toString());
+      r.setAttribute('width','15'); r.setAttribute('height',(10/9).toString());
+      r.setAttribute('fill', (i%2===0) ? '#0D5EAF' : '#FFFFFF');
+      svg.appendChild(r);
+    }
+    // canton bleu
+    var canton = document.createElementNS(SVG_NS,'rect');
+    canton.setAttribute('x','0'); canton.setAttribute('y','0'); canton.setAttribute('width','6'); canton.setAttribute('height','5'); canton.setAttribute('fill','#0D5EAF');
+    svg.appendChild(canton);
+    // croix blanche (vertical + horizontal) centered in canton
+    var v = document.createElementNS(SVG_NS,'rect'); v.setAttribute('x','2.6'); v.setAttribute('y','0'); v.setAttribute('width','0.8'); v.setAttribute('height','5'); v.setAttribute('fill','#FFFFFF');
+    var h = document.createElementNS(SVG_NS,'rect'); h.setAttribute('x','0'); h.setAttribute('y','2.1'); h.setAttribute('width','6'); h.setAttribute('height','0.8'); h.setAttribute('fill','#FFFFFF');
+    svg.appendChild(v); svg.appendChild(h);
+    return svg;
+  }
+
+  // Union Jack simplifié (pour "en")
+  function flagUK() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 60 30');
+    // bleu background
+    var bg = document.createElementNS(SVG_NS,'rect'); bg.setAttribute('x','0'); bg.setAttribute('y','0'); bg.setAttribute('width','60'); bg.setAttribute('height','30'); bg.setAttribute('fill','#012169');
+    svg.appendChild(bg);
+    // diagonal white
+    var d1 = document.createElementNS(SVG_NS,'polygon'); d1.setAttribute('points','0,0 6,0 60,24 60,30 54,30 0,6'); d1.setAttribute('fill','#FFFFFF');
+    var d2 = document.createElementNS(SVG_NS,'polygon'); d2.setAttribute('points','60,0 60,6 6,30 0,30 0,24 54,0'); d2.setAttribute('fill','#FFFFFF');
+    svg.appendChild(d1); svg.appendChild(d2);
+    // diagonal red (thinner)
+    var r1 = document.createElementNS(SVG_NS,'polygon'); r1.setAttribute('points','0,0 2.8,0 60,22.8 60,30 57.2,30 0,7.2'); r1.setAttribute('fill','#C8102E');
+    var r2 = document.createElementNS(SVG_NS,'polygon'); r2.setAttribute('points','60,0 60,2.8 2.8,30 0,30 0,27.2 57.2,0'); r2.setAttribute('fill','#C8102E');
+    svg.appendChild(r1); svg.appendChild(r2);
+    // central white cross
+    var hc = document.createElementNS(SVG_NS,'rect'); hc.setAttribute('x','24'); hc.setAttribute('y','0'); hc.setAttribute('width','12'); hc.setAttribute('height','30'); hc.setAttribute('fill','#FFFFFF');
+    var vc = document.createElementNS(SVG_NS,'rect'); vc.setAttribute('x','0'); vc.setAttribute('y','9'); vc.setAttribute('width','60'); vc.setAttribute('height','12'); vc.setAttribute('fill','#FFFFFF');
+    svg.appendChild(hc); svg.appendChild(vc);
+    // central red cross
+    var hr = document.createElementNS(SVG_NS,'rect'); hr.setAttribute('x','26.5'); hr.setAttribute('y','0'); hr.setAttribute('width','7'); hr.setAttribute('height','30'); hr.setAttribute('fill','#C8102E');
+    var vr = document.createElementNS(SVG_NS,'rect'); vr.setAttribute('x','0'); vr.setAttribute('y','11.5'); vr.setAttribute('width','60'); vr.setAttribute('height','7'); vr.setAttribute('fill','#C8102E');
+    svg.appendChild(hr); svg.appendChild(vr);
+    return svg;
+  }
+
+  function globeIcon() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 24 24');
+    var c = document.createElementNS(SVG_NS,'circle'); c.setAttribute('cx','12'); c.setAttribute('cy','12'); c.setAttribute('r','10'); c.setAttribute('fill','#FFFFFF'); c.setAttribute('opacity','0.08');
+    var g = document.createElementNS(SVG_NS,'path'); g.setAttribute('d','M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0zm4 0h12M12 4v16'); g.setAttribute('fill','none'); g.setAttribute('stroke','#FFFFFF'); g.setAttribute('stroke-width','1.5'); g.setAttribute('stroke-linecap','round'); g.setAttribute('stroke-linejoin','round');
+    svg.appendChild(c); svg.appendChild(g);
+    return svg;
+  }
+
+  function getFlagSVG(code, label) {
+    code = (code||'').toLowerCase();
+    var wrap = document.createElement('span'); // temporary wrapper to return a node
+    if (code === 'fr' || code === 'français' || code === 'fra') {
+      return flagFR();
+    } else if (code === 'gr' || code === 'el' || code === 'greek' || code === 'grc') {
+      return flagGR();
+    } else if (code === 'en' || code === 'gb' || code === 'uk' || code === 'eng') {
+      return flagUK();
+    } else {
+      return globeIcon();
+    }
+  }
+
   function build() {
     if (document.getElementById(containerId)) return;
     var container = document.createElement('div');
     container.id = containerId;
-    container.setAttribute('role', 'toolbar');
-    container.setAttribute('aria-label', 'Outils en haut à droite');
+    container.setAttribute('role','toolbar');
+    container.setAttribute('aria-label','Choix de langue');
 
-    labels.forEach(function (label, idx) {
-      var idxStr = String(idx);
-      var isLink = !!hrefs[idx];
-      var el;
-      if (isLink) {
-        el = document.createElement('a');
-        el.href = hrefs[idx];
-        el.setAttribute('target','_self');
-        el.className = 'trb-link';
-      } else {
-        el = document.createElement('button');
-        el.type = 'button';
-      }
-      el.className = 'trb-btn';
-      el.setAttribute('data-index', idxStr);
-      el.setAttribute('aria-label', label);
-      el.textContent = label;
+    labels.forEach(function(label, idx){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tr-btn';
+      btn.setAttribute('data-index', String(idx));
+      btn.setAttribute('aria-label', 'Passer en ' + label);
 
-      // Keyboard: Enter / Space already handled for button and <a> by browser.
-      // Click handler -> dispatch custom event
-      el.addEventListener('click', function (ev) {
-        // If it's a link, let navigation happen but still dispatch event first.
-        var payload = { index: idx, label: label, element: el, originalEvent: ev };
-        window.dispatchEvent(new CustomEvent('topright:click', { detail: payload }));
+      var svg = getFlagSVG(codes[idx], label);
+      // ajouter title pour accessibilité dans le svg
+      try {
+        var t = document.createElementNS(SVG_NS,'title'); t.textContent = label; svg.insertBefore(t, svg.firstChild);
+      } catch(e){}
+      btn.appendChild(svg);
+
+      btn.addEventListener('click', function (ev) {
+        var lang = codes[idx] || codes[0];
+        var u = new URL(window.location.href);
+        var segs = u.pathname.split('/');
+        // retirer trailing vide si présent
+        if (segs.length > 1 && segs[segs.length - 1] === '') segs.pop();
+        // remonter d'un niveau
+        segs.pop();
+        // ajouter dossier langue + index.html
+        segs.push(lang);
+        segs.push('index.html');
+        var targetPath = segs.join('/');
+        if (!targetPath.startsWith('/')) targetPath = '/' + targetPath;
+        // event annulable
+        var detail = { from: u.pathname, to: targetPath, lang: lang, index: idx, label: label, originalEvent: ev };
+        var ce = new CustomEvent('topright:langchange', { detail: detail, cancelable: true });
+        window.dispatchEvent(ce);
+        if (ce.defaultPrevented) return;
+        // navigue en conservant search & hash
+        u.pathname = targetPath;
+        window.location.href = u.toString();
       }, { passive: true });
 
-      container.appendChild(el);
+      container.appendChild(btn);
     });
 
     document.body.appendChild(container);
@@ -92,31 +185,27 @@
     build();
   }
 
-  // --- Expose une petite API globale optionnelle ---
-  window.TopRightButtons = {
+  // API
+  window.TopRightLangFlag = {
     getContainer: function(){ return document.getElementById(containerId); },
-    setLabels: function(arr){ labels = arr.slice(0,3); if(document.getElementById(containerId)){ document.getElementById(containerId).querySelectorAll('.trb-btn').forEach(function(b,i){ b.textContent = labels[i] || 'Btn'; b.setAttribute('aria-label', labels[i] || 'Btn'); }); } },
-    click: function(i){ var el = document.getElementById(containerId) && document.getElementById(containerId).querySelector('[data-index="'+String(i)+'"]'); if(el) el.click(); }
+    setLanguages: function(labs, codesArr){
+      labels = labs.slice(0,3);
+      codes  = codesArr.slice(0,3);
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      container.querySelectorAll('.tr-btn').forEach(function(b,i){
+        var svg = b.querySelector('svg');
+        var newSvg = getFlagSVG(codes[i], labels[i]);
+        try { var t = document.createElementNS(SVG_NS,'title'); t.textContent = labels[i]; newSvg.insertBefore(t, newSvg.firstChild); } catch(e){}
+        if (svg && svg.parentNode) svg.parentNode.replaceChild(newSvg, svg);
+        b.setAttribute('aria-label', 'Passer en ' + (labels[i]||('Lang'+i)));
+      });
+    },
+    go: function(i){ var btn = document.getElementById(containerId) && document.getElementById(containerId).querySelector('[data-index="'+String(i)+'"]'); if(btn) btn.click(); }
   };
-
 })();
 </script>
 
-  <!-- Inline theme init to avoid FOUC -->
-  <script>
-    (function(){
-      try{
-        var saved = localStorage.getItem('theme');
-        if (saved === 'light' || saved === 'dark') {
-          document.documentElement.setAttribute('data-theme', saved);
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'light');
-        }
-      }catch(e){/* silent */}
-    })();
-  </script>
 
   <style>
     /* Base: light theme variables */
@@ -152,7 +241,7 @@
       min-height:80vh;
       display:flex;align-items:center;justify-content:center;
       overflow:hidden;
-      background:linear-gradient(180deg,var(--overlay),transparent), url('assets/hero-still.jpg') center/cover no-repeat;
+      background:linear-gradient(180deg,var(--overlay),transparent), url('../assets/hero-still.jpg') center/cover no-repeat;
     }
     .hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.14));mix-blend-mode:overlay}
     .hero-inner{position:relative;z-index:2;text-align:center;padding:3rem;max-width:980px}
@@ -188,7 +277,7 @@
     /* COUNTDOWN LARGE */
     .count-big{display:flex;gap:1rem;align-items:center;justify-content:center}
     .count-seg{background:rgba(0,0,0,0.03);padding:1rem 1.1rem;border-radius:10px;min-width:88px;text-align:center}
-    .count-num{font-weight:800;font-size:1.4rem;letter-spacing:0.01em;color:var(--text)}
+    .count-num{font-weight:800;font-size:1.6rem;letter-spacing:0.01em;color:var(--text)}
     .count-label{font-size:0.75rem;opacity:0.8;color:var(--muted)}
 
     /* MODAL compare */
@@ -207,7 +296,7 @@
 
     h2 {
       font-size: 1.8rem;
-       font-family:'playfair display',system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);
+       font-family:'Inter',system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);
     }
 
     /* small helpers */
@@ -221,7 +310,8 @@
     <header class="hero">
       <div class="hero-inner container">
         <h1>Athènes peut-elle passer de <em>Tsimentoupolis</em> à une cité verte ?</h1>
-        <p class="lead">Un documentaire en deux temps. 2025 – 2035.</p>
+        <p class="lead">Un projet documentaire en deux temps.</p>
+        <p>2025 – 2035</p>
         <div class="cta-row">
           <a class="btn" id="watch-btn" href="#film" role="button" aria-label="Voir le film">Voir le film</a>
           <div class="count-small" aria-live="polite">Prochain épisode dans : <span id="hero-count">— ans — mois — jours — -- h</span></div>
@@ -229,7 +319,26 @@
       </div>
     </header>
 
+
     <div class="container">
+      
+       <!-- Compte à rebours mise en avant -->
+      <section id="compte">
+        <div class="card" style="text-align:center">
+          <h2>Épisode 2 – sortie prévue en 2035</h2>
+          <p class="muted">Il reste :</p>
+          <div class="count-big" id="countdown">
+            <div class="count-seg"><div class="count-num" id="yrs">—</div><div class="count-label">ans</div></div>
+            <div class="count-seg"><div class="count-num" id="mos">—</div><div class="count-label">mois</div></div>
+            <div class="count-seg"><div class="count-num" id="dys">—</div><div class="count-label">jours</div></div>
+            <div class="count-seg"><div class="count-num" id="hrs">—</div><div class="count-label">heures</div></div>
+            <div class="count-seg"><div class="count-num" id="min">—</div><div class="count-label">minutes</div></div>
+            <div class="count-seg"><div class="count-num" id="sec">—</div><div class="count-label">secondes</div></div>
+          </div>
+          <p class="muted" style="margin-top:1rem">Le temps est le cœur de ce projet. Un temps long, celui de la nature. Ce compte à rebours marque l’attente d’une réponse : Athènes sera-t-elle devenue une cité verte ?</p>
+        </div>
+      </section>
+
       <!-- Le projet -->
       <section id="projet">
         <div class="grid">
@@ -244,7 +353,7 @@
                 <li><strong>Épisode 1 (2025)</strong> : Athènes au seuil de la transformation.</li>
                 <li><strong>Épisode 2 (2035)</strong> : la ville de demain, filmée dans les mêmes lieux, avec les mêmes cadrages.</li>
               </ul>
-              <p>Entre les deux, dix années de croissance, d’espoir… ou de désillusion.</p>
+              <p>Entre les deux, dix années de croissance, d’espoir…</p>
             </div>
           </div>
 
@@ -311,20 +420,6 @@
         </div>
       </section>-->
 
-      <!-- Compte à rebours mise en avant -->
-      <section id="compte">
-        <div class="card" style="text-align:center">
-          <h2>Épisode 2 – sortie prévue en 2035</h2>
-          <p class="muted">Il reste :</p>
-          <div class="count-big" id="countdown">
-            <div class="count-seg"><div class="count-num" id="yrs">—</div><div class="count-label">ans</div></div>
-            <div class="count-seg"><div class="count-num" id="mos">—</div><div class="count-label">mois</div></div>
-            <div class="count-seg"><div class="count-num" id="dys">—</div><div class="count-label">jours</div></div>
-            <div class="count-seg"><div class="count-num" id="hrs">—</div><div class="count-label">heures</div></div>
-          </div>
-          <p class="muted" style="margin-top:1rem">Le temps est le cœur de ce projet. Un temps long, celui de la nature. Ce compte à rebours marque l’attente d’une réponse : Athènes sera-t-elle devenue une cité verte ?</p>
-        </div>
-      </section>
 
       <!-- À propos -->
       <section id="about">
@@ -361,7 +456,6 @@
   <script>
     // CONFIG
     const episode1URL = '#film'; // remplacer par l'URL de streaming réel
-    // Target date pour l'épisode 2 (format ISO). Par défaut, calculé pour correspondre au texte exemple.
     const targetDateStr = '2035-09-13T00:00:00+03:00';
 
     document.getElementById('watch-btn').href = episode1URL;
@@ -374,40 +468,62 @@
     const mosEl = document.getElementById('mos');
     const dysEl = document.getElementById('dys');
     const hrsEl = document.getElementById('hrs');
+    const minEl = document.getElementById('min');
+    const secEl = document.getElementById('sec');
 
-    function updateCountdown(){
-      const now = new Date();
-      // difference in milliseconds
-      let diff = targetDate - now;
-      if (diff <= 0) { heroCount.textContent = 'Disponible'; yrsEl.textContent='0'; mosEl.textContent='0'; dysEl.textContent='0'; hrsEl.textContent='0'; return; }
+    function updateCountdown() {
+        const now = new Date();
+        let diff = targetDate - now;
 
-      // compute years, months, days approx by using dates
-      // We'll compute full years/months/days using calendar math
-      let yNow = now.getFullYear(), mNow = now.getMonth(), dNow = now.getDate();
-      let yT = targetDate.getFullYear(), mT = targetDate.getMonth(), dT = targetDate.getDate();
+        if (diff <= 0) {
+            heroCount.textContent = 'Disponible';
+            yrsEl.textContent = mosEl.textContent = dysEl.textContent = hrsEl.textContent = minEl.textContent = secEl.textContent = '00';
+            return;
+        }
 
-      let years = yT - yNow;
-      let months = mT - mNow;
-      let days = dT - dNow;
-      // adjust
-      if (days < 0){
-        const prevMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0).getDate();
-        days += new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-        months -= 1;
-      }
-      if (months < 0){months += 12; years -= 1}
+        // Calcul années / mois / jours
+        let yNow = now.getFullYear(), mNow = now.getMonth(), dNow = now.getDate();
+        let yT = targetDate.getFullYear(), mT = targetDate.getMonth(), dT = targetDate.getDate();
 
-      // hours remaining in the current day
-      const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+        let years = yT - yNow;
+        let months = mT - mNow;
+        let days = dT - dNow;
 
-      heroCount.textContent = years.toString().padStart(2,'0') + ' ans – ' + months.toString().padStart(2,'0') + ' mois – ' + days.toString().padStart(2,'0') + ' jours – ' + hours.toString().padStart(2,'0') + ' h';
-      yrsEl.textContent = String(years).padStart(2,'0');
-      mosEl.textContent = String(months).padStart(2,'0');
-      dysEl.textContent = String(days).padStart(2,'0');
-      hrsEl.textContent = String(hours).padStart(2,'0');
+        if (days < 0) {
+            days += new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            months -= 1;
+        }
+        if (months < 0) {
+            months += 12;
+            years -= 1;
+        }
+
+        // Heures, minutes et secondes restants
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        heroCount.textContent =
+            years.toString().padStart(2, '0') + ' ans';
+        /*heroCount.textContent =
+            years.toString().padStart(2, '0') + ' ans – ' +
+            months.toString().padStart(2, '0') + ' mois – ' +
+            days.toString().padStart(2, '0') + ' jours – ' +
+            hours.toString().padStart(2, '0') + ' h – ' +
+            minutes.toString().padStart(2, '0') + ' min – ' +
+            seconds.toString().padStart(2, '0') + ' s';*/
+
+        yrsEl.textContent = years.toString().padStart(2, '0');
+        mosEl.textContent = months.toString().padStart(2, '0');
+        dysEl.textContent = days.toString().padStart(2, '0');
+        hrsEl.textContent = hours.toString().padStart(2, '0');
+        minEl.textContent = minutes.toString().padStart(2, '0');
+        secEl.textContent = seconds.toString().padStart(2, '0');
     }
+
     updateCountdown();
-    setInterval(updateCountdown, 60*1000);
+    // Mise à jour toutes les secondes pour inclure les secondes en temps réel
+    setInterval(updateCountdown, 1000);
 
     // LEAFLET MAP + sample places
     const places = [
@@ -424,20 +540,23 @@
       document.getElementById('modal-caption').textContent = place.title + ' — ' + (place.lat.toFixed(5)) + ', ' + (place.lon.toFixed(5));
       document.getElementById('modal').classList.add('show');
       document.getElementById('modal').setAttribute('aria-hidden','false');
-      // reset slider
       setSliderPercent(50);
     }
 
     places.forEach(p => {
-      const marker = L.marker([p.lat,p.lon]).addTo(map).bindPopup(`<strong>${p.title}</strong><br><small>${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</small><br><button class='compare-btn' data-id='${p.id}'>Comparer 2025 / 2035</button>`);
-      // list
+      const marker = L.marker([p.lat,p.lon]).addTo(map).bindPopup(
+        `<strong>${p.title}</strong><br><small>${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</small><br>
+        <button class='compare-btn' data-id='${p.id}'>Comparer 2025 / 2035</button>`
+      );
       const list = document.getElementById('places-list');
       const el = document.createElement('div'); el.className='place';
-      el.innerHTML = `<img src='${p.img2025}' alt='${p.title}'> <div style='flex:1'><strong>${p.title}</strong><div class='muted' style='font-size:0.9rem'>${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</div></div><div><button class='compare-btn' data-id='${p.id}'>Comparer</button></div>`;
+      el.innerHTML = `<img src='${p.img2025}' alt='${p.title}'> 
+        <div style='flex:1'><strong>${p.title}</strong>
+        <div class='muted' style='font-size:0.9rem'>${p.lat.toFixed(5)}, ${p.lon.toFixed(5)}</div></div>
+        <div><button class='compare-btn' data-id='${p.id}'>Comparer</button></div>`;
       list.appendChild(el);
     });
 
-    // Delegate compare button clicks (map popups are in DOM after click)
     document.body.addEventListener('click', e => {
       const btn = e.target.closest('.compare-btn');
       if (!btn) return;
@@ -446,7 +565,6 @@
       if (place) openCompare(place);
     });
 
-    // MODAL slider logic
     const modal = document.getElementById('modal');
     const modalClose = document.getElementById('modal-close');
     const sliderTop = document.getElementById('slider-top');
@@ -469,7 +587,6 @@
     sliderHandle.addEventListener('mousedown', startDrag); window.addEventListener('mouseup', endDrag); window.addEventListener('mousemove', doDrag);
     sliderHandle.addEventListener('touchstart', startDrag); window.addEventListener('touchend', endDrag); window.addEventListener('touchmove', doDrag);
 
-    // keyboard support
     sliderHandle.addEventListener('keydown', e => {
       let cur = parseInt(sliderHandle.getAttribute('aria-valuenow')||50,10);
       if (e.key === 'ArrowLeft') setSliderPercent(cur-2);
@@ -479,15 +596,8 @@
     modalClose.addEventListener('click', ()=>{modal.classList.remove('show');modal.setAttribute('aria-hidden','true')});
     modal.addEventListener('click', (e)=>{ if (e.target===modal) { modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); } });
 
-    // initial slider position
     setSliderPercent(50);
+</script>
 
-    // THEME TOGGLE LOGIC
-    (function(){
-
-    })();
-
-    // Fallback for when JS is disabled: show basic info
-  </script>
 </body>
 </html>
