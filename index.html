@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="robots" content="noindex">
   <title>Tsimentoupolis - Redirection...</title>
-  <script type="module" src="https://gael-mgn.github.io/js/log.js"></script>
- <script>
+  <script>
   (async () => {
     const userLang = navigator.language.split(/[-_]/)[0]; // "fr", "en", etc.
     const fallbackLangs = ["fr", "en", "gr"];
@@ -19,16 +19,21 @@
       }
     };
 
+    // Récupération de l'URL d'origine
+    const referrer = document.referrer ? encodeURIComponent(document.referrer) : "direct";
+
     for (const lang of triedLangs) {
       const exists = await checkExists(lang);
       if (exists) {
-        window.location.replace(`./${lang}/index.html`);
+        // Ajoute ?source=... ou &source=... selon s'il y a déjà des paramètres
+        const targetUrl = `./${lang}/index.html`;
+        const separator = targetUrl.includes("?") ? "&" : "?";
+        window.location.replace(`${targetUrl}${separator}source=${referrer}`);
         break;
       }
     }
   })();
-</script>
-
+  </script>
 </head>
 <body>
   <!--<p>Redirection en cours...</p>-->
