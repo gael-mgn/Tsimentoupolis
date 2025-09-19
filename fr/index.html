@@ -415,15 +415,81 @@ En 2024, la municipalité s’est engagée à transformer ce paysage en plantant
       </div>
     </section>
 
-    <!-- Section minimaliste : image + courte description -->
-<section id="about-minimal" class="reveal" aria-label="À propos de l'artiste" style="margin:36px 0;">
-  <figure style="display:flex;gap:18px;align-items:center;margin:0;max-width:900px;">
-    <img src="https://gael-maignan.fr/images/gael-maignan.webp" alt="Portrait de l'artiste" style="width:140px;height:140px;object-fit:cover;border-radius:8px;flex:0 0 140px;box-shadow:0 10px 30px rgba(0,0,0,0.5)" />
-    <figcaption style="color:var(--muted);font-size:1rem;line-height:1.4;margin:0;">
-      Réalisateur · Étudiant en <em>urbanisme</em> mobilité à NTUA (Athènes) / EIVP (Paris) — Je souhaite documenter les mutations urbaines, aussi bien à travers l'image que le témoignage.
+
+
+<!-- Section minimaliste responsive : image + courte description -->
+<section id="about-minimal" class="about-minimal reveal" aria-label="À propos de l'artiste">
+  <figure class="about-figure" style="margin:0;/*max-width:900px;*/">
+    <img
+      src="https://gael-maignan.fr/images/gael-maignan.webp"
+      alt="Portrait de l'artiste"
+      class="about-figure__img"
+      loading="lazy"
+      width="560" height="560"
+    />
+    <figcaption class="about-figure__caption">
+      Auteur / Réalisateur · Étudiant en urbanisme mobilité à <strong>NTUA (Athènes)</strong> / <strong>EIVP (Paris)</strong> — Je souhaite documenter les mutations urbaines, aussi bien à travers l'image que le témoignage.
     </figcaption>
   </figure>
 </section>
+
+<style>
+  /* Layout de base */
+  .about-minimal { margin:36px 0; display:flex; justify-content:center; }
+  .about-figure {
+    display:flex;
+    gap:18px;
+    align-items:center;
+    width:100%;
+    /*padding:0 16px;*/
+    box-sizing:border-box;
+  }
+
+  /* Image */
+  .about-figure__img{
+    width:140px;
+    height:140px;
+    object-fit:cover;
+    border-radius:8px;
+    flex:0 0 140px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    background-color:#111;
+    display:block;
+  }
+
+  /* Texte */
+  .about-figure__caption{
+    color:var(--muted);
+    font-size:1rem;
+    line-height:1.4;
+    margin:0;
+  }
+
+  /* Responsive : empilement sur petits écrans */
+  @media (max-width:720px){
+    .about-figure{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:12px;
+    }
+    .about-figure__img{
+      width:100%;
+      height:260px;       /* choix : image-responsive en hauteur fixe pour garder le cadrage */
+      flex:0 0 auto;
+    }
+    .about-figure__caption{
+      font-size:0.98rem;
+    }
+  }
+
+  /* Très petit écran : texte plus compact */
+  @media (max-width:420px){
+    .about-figure{ padding:0 10px; }
+    .about-figure__img{ height:200px; border-radius:6px; }
+    .about-figure__caption{ font-size:0.95rem; }
+  }
+</style>
+
 
 
     <!-- FOOTER CONTACT -->
