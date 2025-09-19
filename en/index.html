@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Portfolio — Nom de l'artiste</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+
+   <script type="module" src="https://gael-mgn.github.io/js/log.js"></script>
+
+
+  <script>
+(function () {
+  var s = document.currentScript || (function(){var a=document.getElementsByTagName('script'); return a[a.length-1];})();
+  var rawLabels = (s && s.getAttribute('data-labels')) || 'Français|English|Ελληνικά';
+  var rawCodes  = (s && s.getAttribute('data-codes'))  || 'fr|en|gr';
+  var labels = rawLabels.split('|').map(function(l){ return l.trim(); }).slice(0,3);
+  var codes  = rawCodes.split('|').map(function(c){ return c.trim().toLowerCase(); }).slice(0,3);
+  while (labels.length < 3) labels.push('Lang');
+  while (codes.length  < 3) codes.push('xx');
+  var containerId = 'tr-lang-flag-' + Math.random().toString(36).slice(2,9);
+
+  // styles (horizontal)
+  var css = '\
+  #'+containerId+'{position:fixed;top:1rem;right:1rem;z-index:2147483647;display:flex;flex-direction:row;gap:0.5rem;align-items:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}\
+  #'+containerId+' .tr-btn{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:6px;border-radius:10px;background:rgba(11,18,32,0.9);border:0;cursor:pointer;box-shadow:0 6px 18px rgba(15,15,15,0.22);transition:transform .12s ease, box-shadow .12s ease;}\
+  #'+containerId+' .tr-btn:focus{outline:3px solid rgba(100,150,255,0.22);outline-offset:3px;transform:translateY(-2px);}\
+  #'+containerId+' .tr-btn:hover{transform:translateY(-3px);}\
+  #'+containerId+' svg{width:28px;height:20px;display:block;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,0.15);}\
+  /* petit affichage : ne garder que le 1er bouton */\
+  @media (max-width:420px){#'+containerId+'{gap:0.35rem;right:0.6rem;top:0.6rem;} #'+containerId+' .tr-btn[data-index]:not([data-index="0"]){display:none;} }';
+
+  var styleEl = document.createElement('style');
+  styleEl.setAttribute('data-for','topright-lang-flag');
+  styleEl.appendChild(document.createTextNode(css));
+  document.head.appendChild(styleEl);
+
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // Generator functions pour drapeaux simples
+  function flagFR() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 3 2');
+    // bleu
+    var r1 = document.createElementNS(SVG_NS,'rect'); r1.setAttribute('x','0'); r1.setAttribute('y','0'); r1.setAttribute('width','1'); r1.setAttribute('height','2'); r1.setAttribute('fill','#0055A4');
+    // blanc
+    var r2 = document.createElementNS(SVG_NS,'rect'); r2.setAttribute('x','1'); r2.setAttribute('y','0'); r2.setAttribute('width','1'); r2.setAttribute('height','2'); r2.setAttribute('fill','#FFFFFF');
+    // rouge
+    var r3 = document.createElementNS(SVG_NS,'rect'); r3.setAttribute('x','2'); r3.setAttribute('y','0'); r3.setAttribute('width','1'); r3.setAttribute('height','2'); r3.setAttribute('fill','#EF4135');
+    svg.appendChild(r1); svg.appendChild(r2); svg.appendChild(r3);
+    return svg;
+  }
+
+  function flagGR() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 15 10');
+    // 9 bandes bleues/blanches (approx)
+    for (var i=0;i<9;i++){
+      var r = document.createElementNS(SVG_NS,'rect');
+      r.setAttribute('x','0'); r.setAttribute('y', (i*(10/9)).toString());
+      r.setAttribute('width','15'); r.setAttribute('height',(10/9).toString());
+      r.setAttribute('fill', (i%2===0) ? '#0D5EAF' : '#FFFFFF');
+      svg.appendChild(r);
+    }
+    // canton bleu
+    var canton = document.createElementNS(SVG_NS,'rect');
+    canton.setAttribute('x','0'); canton.setAttribute('y','0'); canton.setAttribute('width','6'); canton.setAttribute('height','5'); canton.setAttribute('fill','#0D5EAF');
+    svg.appendChild(canton);
+    // croix blanche (vertical + horizontal) centered in canton
+    var v = document.createElementNS(SVG_NS,'rect'); v.setAttribute('x','2.6'); v.setAttribute('y','0'); v.setAttribute('width','0.8'); v.setAttribute('height','5'); v.setAttribute('fill','#FFFFFF');
+    var h = document.createElementNS(SVG_NS,'rect'); h.setAttribute('x','0'); h.setAttribute('y','2.1'); h.setAttribute('width','6'); h.setAttribute('height','0.8'); h.setAttribute('fill','#FFFFFF');
+    svg.appendChild(v); svg.appendChild(h);
+    return svg;
+  }
+
+  // Union Jack simplifié (pour "en")
+  function flagUK() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 60 30');
+    // bleu background
+    var bg = document.createElementNS(SVG_NS,'rect'); bg.setAttribute('x','0'); bg.setAttribute('y','0'); bg.setAttribute('width','60'); bg.setAttribute('height','30'); bg.setAttribute('fill','#012169');
+    svg.appendChild(bg);
+    // diagonal white
+    var d1 = document.createElementNS(SVG_NS,'polygon'); d1.setAttribute('points','0,0 6,0 60,24 60,30 54,30 0,6'); d1.setAttribute('fill','#FFFFFF');
+    var d2 = document.createElementNS(SVG_NS,'polygon'); d2.setAttribute('points','60,0 60,6 6,30 0,30 0,24 54,0'); d2.setAttribute('fill','#FFFFFF');
+    svg.appendChild(d1); svg.appendChild(d2);
+    // diagonal red (thinner)
+    var r1 = document.createElementNS(SVG_NS,'polygon'); r1.setAttribute('points','0,0 2.8,0 60,22.8 60,30 57.2,30 0,7.2'); r1.setAttribute('fill','#C8102E');
+    var r2 = document.createElementNS(SVG_NS,'polygon'); r2.setAttribute('points','60,0 60,2.8 2.8,30 0,30 0,27.2 57.2,0'); r2.setAttribute('fill','#C8102E');
+    svg.appendChild(r1); svg.appendChild(r2);
+    // central white cross
+    var hc = document.createElementNS(SVG_NS,'rect'); hc.setAttribute('x','24'); hc.setAttribute('y','0'); hc.setAttribute('width','12'); hc.setAttribute('height','30'); hc.setAttribute('fill','#FFFFFF');
+    var vc = document.createElementNS(SVG_NS,'rect'); vc.setAttribute('x','0'); vc.setAttribute('y','9'); vc.setAttribute('width','60'); vc.setAttribute('height','12'); vc.setAttribute('fill','#FFFFFF');
+    svg.appendChild(hc); svg.appendChild(vc);
+    // central red cross
+    var hr = document.createElementNS(SVG_NS,'rect'); hr.setAttribute('x','26.5'); hr.setAttribute('y','0'); hr.setAttribute('width','7'); hr.setAttribute('height','30'); hr.setAttribute('fill','#C8102E');
+    var vr = document.createElementNS(SVG_NS,'rect'); vr.setAttribute('x','0'); vr.setAttribute('y','11.5'); vr.setAttribute('width','60'); vr.setAttribute('height','7'); vr.setAttribute('fill','#C8102E');
+    svg.appendChild(hr); svg.appendChild(vr);
+    return svg;
+  }
+
+  function globeIcon() {
+    var svg = document.createElementNS(SVG_NS,'svg');
+    svg.setAttribute('viewBox','0 0 24 24');
+    var c = document.createElementNS(SVG_NS,'circle'); c.setAttribute('cx','12'); c.setAttribute('cy','12'); c.setAttribute('r','10'); c.setAttribute('fill','#FFFFFF'); c.setAttribute('opacity','0.08');
+    var g = document.createElementNS(SVG_NS,'path'); g.setAttribute('d','M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0zm4 0h12M12 4v16'); g.setAttribute('fill','none'); g.setAttribute('stroke','#FFFFFF'); g.setAttribute('stroke-width','1.5'); g.setAttribute('stroke-linecap','round'); g.setAttribute('stroke-linejoin','round');
+    svg.appendChild(c); svg.appendChild(g);
+    return svg;
+  }
+
+  function getFlagSVG(code, label) {
+    code = (code||'').toLowerCase();
+    var wrap = document.createElement('span'); // temporary wrapper to return a node
+    if (code === 'fr' || code === 'français' || code === 'fra') {
+      return flagFR();
+    } else if (code === 'gr' || code === 'el' || code === 'greek' || code === 'grc') {
+      return flagGR();
+    } else if (code === 'en' || code === 'gb' || code === 'uk' || code === 'eng') {
+      return flagUK();
+    } else {
+      return globeIcon();
+    }
+  }
+
+  function build() {
+    if (document.getElementById(containerId)) return;
+    var container = document.createElement('div');
+    container.id = containerId;
+    container.setAttribute('role','toolbar');
+    container.setAttribute('aria-label','Choix de langue');
+
+    labels.forEach(function(label, idx){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tr-btn';
+      btn.setAttribute('data-index', String(idx));
+      btn.setAttribute('aria-label', 'Passer en ' + label);
+
+      var svg = getFlagSVG(codes[idx], label);
+      // ajouter title pour accessibilité dans le svg
+      try {
+        var t = document.createElementNS(SVG_NS,'title'); t.textContent = label; svg.insertBefore(t, svg.firstChild);
+      } catch(e){}
+      btn.appendChild(svg);
+
+      btn.addEventListener('click', function (ev) {
+        var lang = codes[idx] || codes[0];
+        var u = new URL(window.location.href);
+        var segs = u.pathname.split('/');
+        // retirer trailing vide si présent
+        if (segs.length > 1 && segs[segs.length - 1] === '') segs.pop();
+        // remonter d'un niveau
+        segs.pop();
+        // ajouter dossier langue + index.html
+        segs.push('../'+lang);
+        segs.push('index.html');
+        var targetPath = segs.join('/');
+        if (!targetPath.startsWith('/')) targetPath = '/' + targetPath;
+        // event annulable
+        var detail = { from: u.pathname, to: targetPath, lang: lang, index: idx, label: label, originalEvent: ev };
+        var ce = new CustomEvent('topright:langchange', { detail: detail, cancelable: true });
+        window.dispatchEvent(ce);
+        if (ce.defaultPrevented) return;
+        // navigue en conservant search & hash
+        u.pathname = targetPath;
+        window.location.href = u.toString();
+      }, { passive: true });
+
+      container.appendChild(btn);
+    });
+
+    document.body.appendChild(container);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', build);
+  } else {
+    build();
+  }
+
+  // API
+  window.TopRightLangFlag = {
+    getContainer: function(){ return document.getElementById(containerId); },
+    setLanguages: function(labs, codesArr){
+      labels = labs.slice(0,3);
+      codes  = codesArr.slice(0,3);
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      container.querySelectorAll('.tr-btn').forEach(function(b,i){
+        var svg = b.querySelector('svg');
+        var newSvg = getFlagSVG(codes[i], labels[i]);
+        try { var t = document.createElementNS(SVG_NS,'title'); t.textContent = labels[i]; newSvg.insertBefore(t, newSvg.firstChild); } catch(e){}
+        if (svg && svg.parentNode) svg.parentNode.replaceChild(newSvg, svg);
+        b.setAttribute('aria-label', 'Passer en ' + (labels[i]||('Lang'+i)));
+      });
+    },
+    go: function(i){ var btn = document.getElementById(containerId) && document.getElementById(containerId).querySelector('[data-index="'+String(i)+'"]'); if(btn) btn.click(); }
+  };
+})();
+</script>
+
+  <style>
+    :root{
+      --bg:#070709;
+      --card:#0f1113;
+      --muted:#a9afb6;
+      --accent:#ffd54a; /* jaune "sous-titres" */
+      --glass: rgba(255,255,255,0.04);
+      --max-width:1200px;
+      --transition:300ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* Reset minimal */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Montserrat,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,var(--bg),#050506);
+      color: #e6e7e8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    /* Page container */
+    .wrap{max-width:var(--max-width);margin:0 auto;padding:48px 24px}
+
+    /* HERO */
+    .hero{
+      position:relative;
+      height:72vh;
+      min-height:520px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      padding:56px;
+      border-radius:12px;
+      overflow:hidden;
+      background-size:cover;
+      background-position:center center;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+
+    /* set a default hero image; replace with your own URL */
+    .hero{background-image: url('../img/nature.png');}
+
+    .hero::after{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(180deg, rgba(4,4,6,0.4) 0%, rgba(4,4,6,0.75) 60%);
+      pointer-events:none;
+    }
+
+    .hero-inner{position:relative;z-index:2;max-width:900px}
+
+
+    h1{
+      margin:18px 0 12px 0;
+      font-weight:800;
+      font-size:clamp(2.0rem,4.2vw,3.4rem);
+      line-height:1.02;
+      letter-spacing:-0.01em;
+      text-shadow:0 8px 30px rgba(0,0,0,0.6);
+      font-family: "playfair display";
+    }
+
+    .lead{color:var(--muted);max-width:60ch;}
+
+    .subtitle {
+      color: #FFFE00; font-family: 'Tahoma'; text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);
+    }
+
+    /* CTA */
+    .cta{display:inline-flex;gap:12px;margin-top:18px}
+    .btn{
+      background:transparent;border:1px solid rgba(255,255,255,0.08);padding:10px 14px;border-radius:10px;color:inherit;font-weight:600;backdrop-filter: blur(4px);
+      transition:var(--transition);
+    }
+    .btn:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+
+    /* SECTIONS */
+    section{margin:56px 0;padding:6px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .section-head h2{margin:0;font-size:1.25rem;}
+    .section-head .sub{color:var(--muted);font-size:0.9rem}
+
+    /* Intentions artistiques */
+    .intentions{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
+    .intentions .card{background:var(--card);padding:22px;border-radius:12px}
+    .intentions .card h3{margin-top:0; font-family: 'playfair display'}
+    .intentions p{color:var(--muted)}
+
+    /* Gallery grid */
+    .grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px
+    }
+    .project{
+      position:relative;min-height:260px;border-radius:10px;overflow:hidden;background-size:cover;background-position:center center;cursor:pointer;transition:transform var(--transition), box-shadow var(--transition);
+    }
+    .project::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.55) 80%);transition:opacity var(--transition)}
+    .project .meta{position:absolute;left:16px;bottom:16px;z-index:2}
+    .project .meta h3{margin:0;font-size:1.05rem}
+    .project .meta p{margin:4px 0 0;color:var(--muted);font-size:0.9rem}
+
+    .project:hover{transform:translateY(-6px);box-shadow:0 30px 60px rgba(0,0,0,0.6)}
+    .project .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--transition);z-index:3}
+    .project:hover .overlay{opacity:1}
+    .overlay .play{
+      width:76px;height:76px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.36);backdrop-filter: blur(4px);
+    }
+    .overlay svg{width:32px;height:32px}
+
+    /* video modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);z-index:40;padding:24px;opacity:0;pointer-events:none;transition:opacity 220ms}
+    .modal.open{opacity:1;pointer-events:auto}
+    .modal .frame{width:min(1120px,96%);aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;position:relative}
+    .modal .close{position:absolute;right:10px;top:10px;background:rgba(255,255,255,0.06);border-radius:8px;padding:8px}
+
+    /* reveal animations */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity 600ms var(--transition), transform 600ms var(--transition)}
+    .reveal.in-view{opacity:1;transform:none}
+
+    /* FOOTER */
+    footer{color:var(--muted);font-size:0.9rem;padding:36px 0;text-align:center}
+
+    /* Responsive tweaks */
+    @media (max-width:900px){
+      .intentions{grid-template-columns:1fr}
+      .hero{height:64vh;padding:36px}
+    }
+    @media (max-width:520px){
+      .hero{padding:22px;height:56vh}
+      .wrap{padding:22px}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <!-- HERO -->
+    <header class="hero reveal" id="hero" aria-label="Bannière principale">
+      <div class="hero-inner">
+        <h1>Film Documentaire :<br><em>Tsimentoupolis</em></h1>
+        <p class="lead subtitle">C’est ainsi qu’on surnomme Athènes : une capitale de ciment, minérale, étouffante sous les chaleurs estivales.<br>
+En 2024, la municipalité s’est engagée à transformer ce paysage en plantant 25 000 arbres d’ici 2028.</p>
+        <div class="cta">
+          <a class="btn" href="#galerie">Bande annonce</a>
+          <a class="btn" href="#intentions">Intentions</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- INTENTIONS -->
+    <section id="intentions" class="reveal">
+      <div class="section-head">
+        <h2 class="subtitle">[Intentions]</h2>
+        <div class="sub">Film-Documentaire</div>
+      </div>
+
+      <div class="intentions" style="margin-top:18px">
+        <article class="card">
+          <h3>La question directrice</h3>
+          <p><em>“Athènes peut-elle passer de Tsimentoupolis à une cité verte ?”</em>
+            </p><p>Autour de ce film s’articule une enquête élargie : données sur la pollution et la chaleur urbaine, entretiens avec habitants, urbanistes et chercheurs.</p>
+          <h3 style="margin-top:18px">Méthode</h3>
+          <p>Donner la parole aux habitants, aux chercheurs, aux urbanistes, aux politiciens...</p>
+        </article>
+
+        <aside class="card" aria-hidden="false">
+          <!-- replace URL with a portrait / work image -->
+          <div style="height:100%;background-image:url('../img/nature2.png');background-size:cover;border-radius:8px;min-height:260px"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="galerie" class="reveal">
+      <div class="section-head">
+        <h2 class="subtitle">[Médias / Contenus]</h2>
+        <div class="sub">Ressources</div>
+      </div>
+
+      <div class="grid" style="margin-top:18px">
+
+
+        <!-- Project: Video (click opens modal) -->
+        <div class="project" data-video-src="https://vimeo.com/manage/videos/1120095888" style="background-image:url('../img/nature.png')" tabindex="0" role="button" aria-label="Lire la vidéo 1">
+          <div class="overlay">
+            <div class="play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7L8 5z" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="meta">
+            <h3>Τσιμεντούπολη — Τρέιλερ / Tsimentoupolis — Trailer</h3>
+            <p>Ιούνιος 2026 / June 2026 — 00:18</p>
+          </div>
+        </div>
+
+        <a class="project" href="#" style="background-image:url('../img/stone.png')" tabindex="0" role="button" aria-label="Lire la vidéo 1">
+          <div class="overlay">
+            <div class="play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7L8 5z" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="meta">
+            <h3>Appel à témoignage — Habitants, Chercheurs, Politiques...</h3>
+            <p>Septembre 2025</p>
+          </div>
+        </a>
+
+
+
+      </div>
+    </section>
+
+    <!-- FOOTER CONTACT -->
+    <footer class="reveal">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <strong>Gaël Maignan</strong><br>
+          <span style="color:var(--muted)"><a href="mailto:contact@gael-maignan.fr">contact@gael-maignan.fr</a></span>
+        </div>
+        <nav style="display:flex;gap:12px;align-items:center">
+          <a class="btn" href="https://www.linkedin.com/in/gael-maignan/" target="_blank">Linkedin</a>
+        </nav>
+      </div>
+    </footer>
+  </main>
+
+  <!-- VIDEO MODAL -->
+  <div class="modal" id="videoModal" aria-hidden="true">
+    <div class="frame" role="dialog" aria-label="Lecteur vidéo">
+      <button class="close" id="closeModal" aria-label="Fermer">✕</button>
+      <!--<video id="modalVideo" controls style="width:100%;height:100%;display:block;background:#000" preload="metadata"></video>-->
+       <iframe src="https://player.vimeo.com/video/1120095888?badge=0" style="width:100%;height:100%;display:block;background:#000" title="Épisode 1" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    // IntersectionObserver for reveal
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting) e.target.classList.add('in-view');
+      });
+    },{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    // Video modal logic
+    const modal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+    const closeBtn = document.getElementById('closeModal');
+
+    function openModal(src){
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      modalVideo.src = src;
+      modalVideo.play().catch(()=>{});
+      document.body.style.overflow='hidden';
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      modalVideo.pause();
+      modalVideo.removeAttribute('src');
+      document.body.style.overflow='';
+    }
+
+    // Attach click handlers to project items that have video
+    document.querySelectorAll('.project').forEach(card=>{
+      card.addEventListener('click',()=>{
+        const src = card.dataset.videoSrc;
+        if(src) openModal(src);
+        else {
+          // open a lightbox / navigate to image detail
+          // small native fallback: open background image in new tab
+          const style = getComputedStyle(card).backgroundImage;
+          const url = style.slice(5,-2);
+          window.open(url,'_blank');
+        }
+      });
+      card.addEventListener('keydown',(e)=>{
+        if(e.key==='Enter' || e.key===' ') card.click();
+      });
+    })
+
+    closeBtn.addEventListener('click',closeModal);
+    modal.addEventListener('click',(e)=>{ if(e.target===modal) closeModal(); });
+
+    // Subtle parallax on hero (desktop only)
+    const hero = document.getElementById('hero');
+    if(window.innerWidth>800 && hero){
+      window.addEventListener('scroll',()=>{
+        const rect = hero.getBoundingClientRect();
+        const pos = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+        hero.style.backgroundPositionY = 50 - pos*6 + '%';
+      },{passive:true});
+    }
+
+    // Accessibility: trap focus inside modal when open
+    document.addEventListener('keydown', (e)=>{
+      if(e.key==='Escape' && modal.classList.contains('open')) closeModal();
+    });
+  </script>
+</body>
+</html>
