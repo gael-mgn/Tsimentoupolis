@@ -3,9 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Portfolio — Nom de l'artiste</title>
+  <title>Tsimentoupolis — Documentary film (release date June 2026)</title>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" href="../favicon.png" type="image/png">
+
+
+    <meta name="description" content="[Tsimentoupolis is a documentary film currently in production about the greening of Athens (scheduled for release in June 2026)]. This is how Athens is nicknamed: a capital of cement, mineral, suffocating under the summer heat.">
+  <meta name="keywords" content="Tsimentoupolis, Documentary film, Gaël Maignan, Athens, Athens, author, Urban planning">
+
+  <meta property="og:image" content="">
+
 
    <script type="module" src="https://gael-mgn.github.io/js/log.js"></script>
 
@@ -21,15 +30,29 @@
   while (codes.length  < 3) codes.push('xx');
   var containerId = 'tr-lang-flag-' + Math.random().toString(36).slice(2,9);
 
-  // styles (horizontal)
+  // styles (desktop horizontal + mobile compact/expand)
   var css = '\
-  #'+containerId+'{position:fixed;top:1rem;right:1rem;z-index:2147483647;display:flex;flex-direction:row;gap:0.5rem;align-items:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}\
-  #'+containerId+' .tr-btn{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:6px;border-radius:10px;background:rgba(11,18,32,0.9);border:0;cursor:pointer;box-shadow:0 6px 18px rgba(15,15,15,0.22);transition:transform .12s ease, box-shadow .12s ease;}\
-  #'+containerId+' .tr-btn:focus{outline:3px solid rgba(100,150,255,0.22);outline-offset:3px;transform:translateY(-2px);}\
-  #'+containerId+' .tr-btn:hover{transform:translateY(-3px);}\
-  #'+containerId+' svg{width:28px;height:20px;display:block;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,0.15);}\
-  /* petit affichage : ne garder que le 1er bouton */\
-  @media (max-width:420px){#'+containerId+'{gap:0.35rem;right:0.6rem;top:0.6rem;} #'+containerId+' .tr-btn[data-index]:not([data-index="0"]){display:none;} }';
+  #'+containerId+'{position:fixed;top:1rem;right:1rem;z-index:2147483647;display:flex;flex-direction:row;gap:0.5rem;align-items:center;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}\n\
+  #'+containerId+' .tr-btn{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:6px;border-radius:10px;background:rgba(11,18,32,0.9);border:0;cursor:pointer;box-shadow:0 6px 18px rgba(15,15,15,0.22);transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;}\n\
+  #'+containerId+' .tr-btn:focus{outline:3px solid rgba(100,150,255,0.22);outline-offset:3px;transform:translateY(-2px);}\n\
+  #'+containerId+' .tr-btn:hover{transform:translateY(-3px);}\n\
+  #'+containerId+' svg{width:28px;height:20px;display:block;border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,0.15);}\n\
+  /* toggle (mobile) - hidden on desktop */\n\
+  #'+containerId+' .tr-toggle{display:none;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:6px;border-radius:10px;background:rgba(11,18,32,0.95);border:0;cursor:pointer;box-shadow:0 6px 18px rgba(15,15,15,0.28);}\n\
+  /* petit affichage : compact, afficher qu\'un bouton (globe) ; possibilité d\'ouvrir pour voir les autres */\n\
+  @media (max-width:420px){\n\
+    #'+containerId+'{gap:0.35rem;right:0.6rem;bottom:0.6rem;top:auto;flex-direction:column;align-items:flex-end;}\n\
+    /* masquer tous sauf index 0 par défaut */\n\
+    #'+containerId+' .tr-btn[data-index]:not([data-index=\"0\"]) { display:none; opacity:0; transform:translateY(6px); }\n\
+    /* montrer toggle */\n\
+    #'+containerId+' .tr-toggle{display:inline-flex}\n\
+    /* quand expanded : afficher les autres boutons verticalement avec animation */\n\
+    #'+containerId+'.expanded { align-items:flex-end; }\n\
+    #'+containerId+'.expanded .tr-btn[data-index]:not([data-index=\"0\"]) { display:inline-flex; opacity:1; transform:translateY(0); }\n\
+    /* petite touche esthétique: élever le premier bouton quand expanded */\n\
+    #'+containerId+'.expanded .tr-toggle { transform:translateY(-6px); }\n\
+  }\n\
+  ';
 
   var styleEl = document.createElement('style');
   styleEl.setAttribute('data-for','topright-lang-flag');
@@ -42,11 +65,8 @@
   function flagFR() {
     var svg = document.createElementNS(SVG_NS,'svg');
     svg.setAttribute('viewBox','0 0 3 2');
-    // bleu
     var r1 = document.createElementNS(SVG_NS,'rect'); r1.setAttribute('x','0'); r1.setAttribute('y','0'); r1.setAttribute('width','1'); r1.setAttribute('height','2'); r1.setAttribute('fill','#0055A4');
-    // blanc
     var r2 = document.createElementNS(SVG_NS,'rect'); r2.setAttribute('x','1'); r2.setAttribute('y','0'); r2.setAttribute('width','1'); r2.setAttribute('height','2'); r2.setAttribute('fill','#FFFFFF');
-    // rouge
     var r3 = document.createElementNS(SVG_NS,'rect'); r3.setAttribute('x','2'); r3.setAttribute('y','0'); r3.setAttribute('width','1'); r3.setAttribute('height','2'); r3.setAttribute('fill','#EF4135');
     svg.appendChild(r1); svg.appendChild(r2); svg.appendChild(r3);
     return svg;
@@ -55,7 +75,6 @@
   function flagGR() {
     var svg = document.createElementNS(SVG_NS,'svg');
     svg.setAttribute('viewBox','0 0 15 10');
-    // 9 bandes bleues/blanches (approx)
     for (var i=0;i<9;i++){
       var r = document.createElementNS(SVG_NS,'rect');
       r.setAttribute('x','0'); r.setAttribute('y', (i*(10/9)).toString());
@@ -63,37 +82,29 @@
       r.setAttribute('fill', (i%2===0) ? '#0D5EAF' : '#FFFFFF');
       svg.appendChild(r);
     }
-    // canton bleu
     var canton = document.createElementNS(SVG_NS,'rect');
     canton.setAttribute('x','0'); canton.setAttribute('y','0'); canton.setAttribute('width','6'); canton.setAttribute('height','5'); canton.setAttribute('fill','#0D5EAF');
     svg.appendChild(canton);
-    // croix blanche (vertical + horizontal) centered in canton
     var v = document.createElementNS(SVG_NS,'rect'); v.setAttribute('x','2.6'); v.setAttribute('y','0'); v.setAttribute('width','0.8'); v.setAttribute('height','5'); v.setAttribute('fill','#FFFFFF');
     var h = document.createElementNS(SVG_NS,'rect'); h.setAttribute('x','0'); h.setAttribute('y','2.1'); h.setAttribute('width','6'); h.setAttribute('height','0.8'); h.setAttribute('fill','#FFFFFF');
     svg.appendChild(v); svg.appendChild(h);
     return svg;
   }
 
-  // Union Jack simplifié (pour "en")
   function flagUK() {
     var svg = document.createElementNS(SVG_NS,'svg');
     svg.setAttribute('viewBox','0 0 60 30');
-    // bleu background
     var bg = document.createElementNS(SVG_NS,'rect'); bg.setAttribute('x','0'); bg.setAttribute('y','0'); bg.setAttribute('width','60'); bg.setAttribute('height','30'); bg.setAttribute('fill','#012169');
     svg.appendChild(bg);
-    // diagonal white
     var d1 = document.createElementNS(SVG_NS,'polygon'); d1.setAttribute('points','0,0 6,0 60,24 60,30 54,30 0,6'); d1.setAttribute('fill','#FFFFFF');
     var d2 = document.createElementNS(SVG_NS,'polygon'); d2.setAttribute('points','60,0 60,6 6,30 0,30 0,24 54,0'); d2.setAttribute('fill','#FFFFFF');
     svg.appendChild(d1); svg.appendChild(d2);
-    // diagonal red (thinner)
     var r1 = document.createElementNS(SVG_NS,'polygon'); r1.setAttribute('points','0,0 2.8,0 60,22.8 60,30 57.2,30 0,7.2'); r1.setAttribute('fill','#C8102E');
     var r2 = document.createElementNS(SVG_NS,'polygon'); r2.setAttribute('points','60,0 60,2.8 2.8,30 0,30 0,27.2 57.2,0'); r2.setAttribute('fill','#C8102E');
     svg.appendChild(r1); svg.appendChild(r2);
-    // central white cross
     var hc = document.createElementNS(SVG_NS,'rect'); hc.setAttribute('x','24'); hc.setAttribute('y','0'); hc.setAttribute('width','12'); hc.setAttribute('height','30'); hc.setAttribute('fill','#FFFFFF');
     var vc = document.createElementNS(SVG_NS,'rect'); vc.setAttribute('x','0'); vc.setAttribute('y','9'); vc.setAttribute('width','60'); vc.setAttribute('height','12'); vc.setAttribute('fill','#FFFFFF');
     svg.appendChild(hc); svg.appendChild(vc);
-    // central red cross
     var hr = document.createElementNS(SVG_NS,'rect'); hr.setAttribute('x','26.5'); hr.setAttribute('y','0'); hr.setAttribute('width','7'); hr.setAttribute('height','30'); hr.setAttribute('fill','#C8102E');
     var vr = document.createElementNS(SVG_NS,'rect'); vr.setAttribute('x','0'); vr.setAttribute('y','11.5'); vr.setAttribute('width','60'); vr.setAttribute('height','7'); vr.setAttribute('fill','#C8102E');
     svg.appendChild(hr); svg.appendChild(vr);
@@ -111,7 +122,6 @@
 
   function getFlagSVG(code, label) {
     code = (code||'').toLowerCase();
-    var wrap = document.createElement('span'); // temporary wrapper to return a node
     if (code === 'fr' || code === 'français' || code === 'fra') {
       return flagFR();
     } else if (code === 'gr' || code === 'el' || code === 'greek' || code === 'grc') {
@@ -130,6 +140,25 @@
     container.setAttribute('role','toolbar');
     container.setAttribute('aria-label','Choix de langue');
 
+    // toggle button (globe) - visible on mobile via CSS
+    var toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'tr-toggle';
+    toggleBtn.setAttribute('aria-expanded','false');
+    toggleBtn.setAttribute('aria-controls', containerId + '-list');
+    toggleBtn.setAttribute('aria-label','Ouvrir le sélecteur de langue');
+    var tSvg = globeIcon();
+    try { var tt = document.createElementNS(SVG_NS,'title'); tt.textContent = 'Langues'; tSvg.insertBefore(tt, tSvg.firstChild); } catch(e){}
+    toggleBtn.appendChild(tSvg);
+
+    // list container for accessibility (but we will keep individual buttons as before)
+    var listWrapper = document.createElement('div');
+    listWrapper.id = containerId + '-list';
+    listWrapper.setAttribute('role','group');
+    listWrapper.setAttribute('aria-hidden','true');
+    listWrapper.style.display = 'contents'; // keep visual layout flexible
+
+    // create language buttons
     labels.forEach(function(label, idx){
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -138,39 +167,91 @@
       btn.setAttribute('aria-label', 'Passer en ' + label);
 
       var svg = getFlagSVG(codes[idx], label);
-      // ajouter title pour accessibilité dans le svg
       try {
         var t = document.createElementNS(SVG_NS,'title'); t.textContent = label; svg.insertBefore(t, svg.firstChild);
       } catch(e){}
       btn.appendChild(svg);
 
       btn.addEventListener('click', function (ev) {
+        // when clicked on mobile, collapse
+        container.classList.remove('expanded');
+        toggleBtn.setAttribute('aria-expanded','false');
+        listWrapper.setAttribute('aria-hidden','true');
+
         var lang = codes[idx] || codes[0];
         var u = new URL(window.location.href);
         var segs = u.pathname.split('/');
-        // retirer trailing vide si présent
         if (segs.length > 1 && segs[segs.length - 1] === '') segs.pop();
-        // remonter d'un niveau
         segs.pop();
-        // ajouter dossier langue + index.html
         segs.push('../'+lang);
         segs.push('index.html');
         var targetPath = segs.join('/');
         if (!targetPath.startsWith('/')) targetPath = '/' + targetPath;
-        // event annulable
         var detail = { from: u.pathname, to: targetPath, lang: lang, index: idx, label: label, originalEvent: ev };
         var ce = new CustomEvent('topright:langchange', { detail: detail, cancelable: true });
         window.dispatchEvent(ce);
         if (ce.defaultPrevented) return;
-        // navigue en conservant search & hash
         u.pathname = targetPath;
         window.location.href = u.toString();
       }, { passive: true });
 
-      container.appendChild(btn);
+      listWrapper.appendChild(btn);
     });
 
+    // assemble: toggle first (so tab order is natural on mobile), then list
+    container.appendChild(toggleBtn);
+    container.appendChild(listWrapper);
     document.body.appendChild(container);
+
+    // click handlers for toggle + outside click + Esc
+    function closeMenu() {
+      container.classList.remove('expanded');
+      toggleBtn.setAttribute('aria-expanded','false');
+      listWrapper.setAttribute('aria-hidden','true');
+    }
+    function openMenu() {
+      container.classList.add('expanded');
+      toggleBtn.setAttribute('aria-expanded','true');
+      listWrapper.setAttribute('aria-hidden','false');
+      // give focus to the first language button (index 1 if exists, else 0)
+      var firstHidden = container.querySelector('.tr-btn[data-index="1"]') || container.querySelector('.tr-btn[data-index="0"]');
+      if (firstHidden) firstHidden.focus();
+    }
+
+    toggleBtn.addEventListener('click', function (ev) {
+      if (container.classList.contains('expanded')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    }, { passive: true });
+
+    // close when clicking outside (only when expanded)
+    document.addEventListener('click', function (ev) {
+      if (!container.classList.contains('expanded')) return;
+      var target = ev.target;
+      if (!container.contains(target)) {
+        closeMenu();
+      }
+    }, { passive: true });
+
+    // close on ESC
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' || ev.key === 'Esc') {
+        if (container.classList.contains('expanded')) {
+          closeMenu();
+          toggleBtn.focus();
+        }
+      }
+    });
+
+    // make sure ARIA state consistent on resize (if desktop then remove expanded)
+    window.addEventListener('resize', function () {
+      // simple heuristic: if viewport wider than 420, ensure expanded removed
+      if (window.innerWidth > 420 && container.classList.contains('expanded')) {
+        closeMenu();
+      }
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -187,7 +268,9 @@
       codes  = codesArr.slice(0,3);
       var container = document.getElementById(containerId);
       if (!container) return;
-      container.querySelectorAll('.tr-btn').forEach(function(b,i){
+      // update / recreate svgs and aria labels
+      var btns = container.querySelectorAll('.tr-btn');
+      btns.forEach(function(b,i){
         var svg = b.querySelector('svg');
         var newSvg = getFlagSVG(codes[i], labels[i]);
         try { var t = document.createElementNS(SVG_NS,'title'); t.textContent = labels[i]; newSvg.insertBefore(t, newSvg.firstChild); } catch(e){}
@@ -198,6 +281,7 @@
     go: function(i){ var btn = document.getElementById(containerId) && document.getElementById(containerId).querySelector('[data-index="'+String(i)+'"]'); if(btn) btn.click(); }
   };
 })();
+
 </script>
 
   <style>
@@ -284,13 +368,13 @@
     /* SECTIONS */
     section{margin:56px 0;padding:6px}
     .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .section-head h2{margin:0;font-size:1.25rem;}
+    .section-head h2{margin:0;font-size:1.25rem;font-weight: normal;}
     .section-head .sub{color:var(--muted);font-size:0.9rem}
 
     /* Intentions artistiques */
     .intentions{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start}
     .intentions .card{background:var(--card);padding:22px;border-radius:12px}
-    .intentions .card h3{margin-top:0; font-family: 'playfair display'}
+    .intentions .card h3{margin-top:0; font-family: 'Tahoma'; font-weight: normal}
     .intentions p{color:var(--muted)}
 
     /* Gallery grid */
@@ -335,6 +419,19 @@
       .hero{padding:22px;height:56vh}
       .wrap{padding:22px}
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
   </style>
 </head>
 <body>
@@ -342,13 +439,14 @@
     <!-- HERO -->
     <header class="hero reveal" id="hero" aria-label="Bannière principale">
       <div class="hero-inner">
-        <h1>Film Documentaire :<br><em>Tsimentoupolis</em></h1>
-        <p class="lead subtitle">C’est ainsi qu’on surnomme Athènes : une capitale de ciment, minérale, étouffante sous les chaleurs estivales.<br>
-En 2024, la municipalité s’est engagée à transformer ce paysage en plantant 25 000 arbres d’ici 2028.</p>
-        <div class="cta">
+        <h1>Documentary Film :<br><em>Tsimentoupolis</em></h1>
+        <p class="lead subtitle">[<em>Tsimentoupolis</em>is a documentary film currently in production about the greening of Athens (scheduled for release in June 2026).</p>
+        <p class="lead subtitle">
+          That's how Athens is nicknamed: a capital of concrete, mineral, stifling in the summer heat.<br>In 2024, the municipality committed to transforming this landscape by planting 25,000 trees by 2028.</p>
+        <!--<div class="cta">
           <a class="btn" href="#galerie">Bande annonce</a>
           <a class="btn" href="#intentions">Intentions</a>
-        </div>
+        </div>-->
       </div>
     </header>
 
@@ -356,21 +454,25 @@ En 2024, la municipalité s’est engagée à transformer ce paysage en plantant
     <section id="intentions" class="reveal">
       <div class="section-head">
         <h2 class="subtitle">[Intentions]</h2>
-        <div class="sub">Film-Documentaire</div>
+        <div class="sub">Overview</div>
       </div>
 
       <div class="intentions" style="margin-top:18px">
         <article class="card">
-          <h3>La question directrice</h3>
-          <p><em>“Athènes peut-elle passer de Tsimentoupolis à une cité verte ?”</em>
-            </p><p>Autour de ce film s’articule une enquête élargie : données sur la pollution et la chaleur urbaine, entretiens avec habitants, urbanistes et chercheurs.</p>
-          <h3 style="margin-top:18px">Méthode</h3>
-          <p>Donner la parole aux habitants, aux chercheurs, aux urbanistes, aux politiciens...</p>
+          <h3>Synopsis</h3>
+          <p><em>Tsimentoupolis</em> is a documentary essay on Athens, often referred to as the “city of cement.” The film follows the greening initiative launched by the municipality in 2024, comparing institutional discourse, scientific knowledge, and citizen practices. Without showing any faces, the narrative explores the climatic, social, and political issues of greening that is sometimes cosmetic, sometimes militant, and asks the question: can greening transform the city in a profound way, or does it remain superficial?</p>
+ 
+          <h3 style="margin-top:18px">Process</h3>
+          <p>The documentary research is based on semi-structured interviews, ambient recordings, and photographic surveys. <br>The aim is to give a voice to residents, researchers, urban planners, and other stakeholders involved in this policy.
+<p>Interviews can be conducted in English, French, or Greek, depending on the interviewee's preferred language. Each interview will be transcribed and subtitled to make the film accessible to as wide an audience as possible.</p>
         </article>
 
         <aside class="card" aria-hidden="false">
           <!-- replace URL with a portrait / work image -->
-          <div style="height:100%;background-image:url('../img/nature2.png');background-size:cover;border-radius:8px;min-height:260px"></div>
+          <div style="height:100%;background-image:url('../img/nature2.png');background-size:cover;border-radius:8px;min-height:260px">
+          </div>
+          <h3 style="margin-top:18px">Recording process</h3>
+            <p>The recording process takes place in two stages: first, the audio recording of the testimonies; second, the creation of figurative shots. These are not limited to illustrating the comments, but carry a parallel narrative, revealing another facet of the story.</p>
         </aside>
       </div>
     </section>
@@ -378,7 +480,7 @@ En 2024, la municipalité s’est engagée à transformer ce paysage en plantant
     <!-- GALLERY -->
     <section id="galerie" class="reveal">
       <div class="section-head">
-        <h2 class="subtitle">[Médias / Contenus]</h2>
+        <h2 class="subtitle">[Content]</h2>
         <div class="sub">Ressources</div>
       </div>
 
@@ -398,22 +500,141 @@ En 2024, la municipalité s’est engagée à transformer ce paysage en plantant
           </div>
         </div>
 
-        <a class="project" href="#" style="background-image:url('../img/stone.png')" tabindex="0" role="button" aria-label="Lire la vidéo 1">
+<!--
+        <a class="project" href="index.html" style="background-image:url('../img/stone.png')" tabindex="0" role="button" aria-label="Lire la vidéo 1">
           <div class="overlay">
             <div class="play" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7L8 5z" fill="currentColor"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+  <path d="M12 8V16M12 16L9 13M12 16L15 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
             </div>
           </div>
           <div class="meta">
-            <h3>Appel à témoignage — Habitants, Chercheurs, Politiques...</h3>
+            <h3>Appel à témoignages — Habitants, Chercheurs, Politiques...</h3>
             <p>Septembre 2025</p>
           </div>
-        </a>
+        </a>-->
 
 
 
       </div>
     </section>
+
+
+ <section id="intentions" class="reveal">
+      <div class="section-head">
+        <h2 class="subtitle">[Call for testimonials]</h2>
+        <div class="sub">To contribute</div>
+      </div>
+
+      <div class="intentions" style="margin-top:18px">
+        <article class="card">
+          <h3>Call for testimonials</h3>
+          <p>Are you a researcher in urban planning or architecture, a resident of a recently greened neighborhood, or involved (directly or indirectly) in Athens' tree planting policy?
+We would be interested in hearing from you. Every contribution will help to enrich the film.
+
+The interview will be recorded using a simple lapel microphone. It will be a guided conversation lasting no more than 15 minutes.
+
+        </article>
+
+        <aside class="card" aria-hidden="false">
+          <!-- replace URL with a portrait / work image -->
+          <h3>Contact</h3>
+          <p>If you would like to participate, please feel free to write to us at the following address so that we can arrange an appointment:</p>
+          <a href="mailto:contact@gael-maignan.fr" class="subtitle">contact@gael-maignan.fr</a>
+        </aside>
+      </div>
+    </section>
+
+
+
+
+<!-- Section minimaliste responsive : image + courte description -->
+<section id="galerie" class="reveal">
+      <div class="section-head">
+        <h2 class="subtitle">[Film Production]</h2>
+        <div class="sub">Gaël Maignan</div>
+      </div>
+<div id="about-minimal" class="about-minimal reveal" aria-label="À propos de l'artiste">
+  <figure class="about-figure" style="margin:0;/*max-width:900px;*/">
+    <img
+      src="https://gael-maignan.fr/images/gael-maignan.webp"
+      alt="Portrait de l'artiste"
+      class="about-figure__img"
+      loading="lazy"
+      width="560" height="560"
+    />
+    <figcaption class="about-figure__caption">
+      <p><strong>Author – Director · Urban planning student (NTUA, Athens / EIVP, Paris)</strong></p>
+      <p>I strive to document urban change by combining images and words to show and convey the transformations taking place in contemporary cities.</p>
+      <a href="mailto:contact@gael-maignan.fr" target="_blank">contact@gael-maignan.fr</a> | <a href="http://gael-maignan.fr/" target="_blank">gael-maignan.fr</a>
+    </figcaption>
+  </figure>
+</div>
+</section>
+
+<style>
+  /* Layout de base */
+  .about-minimal { margin:36px 0; display:flex; justify-content:center; }
+  .about-figure {
+    display:flex;
+    gap:18px;
+    align-items:center;
+    width:100%;
+    /*padding:0 16px;*/
+    box-sizing:border-box;
+  }
+
+  /* Image */
+  .about-figure__img{
+    width:140px;
+    height:140px;
+    object-fit:cover;
+    border-radius:8px;
+    flex:0 0 140px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    background-color:#111;
+    display:block;
+  }
+
+  /* Texte */
+  .about-figure__caption{
+    color:var(--muted);
+    font-size:1rem;
+    line-height:1.4;
+    margin:0;
+  }
+
+  /* Responsive : empilement sur petits écrans */
+  @media (max-width:720px){
+    .about-figure{
+      flex-direction:column;
+      align-items:flex-start;
+      gap:12px;
+    }
+    .about-figure__img{
+      width:100%;
+      height:260px;       /* choix : image-responsive en hauteur fixe pour garder le cadrage */
+      flex:0 0 auto;
+    }
+    .about-figure__caption{
+      font-size:0.98rem;
+    }
+  }
+
+  /* Très petit écran : texte plus compact */
+  @media (max-width:420px){
+    .about-figure{ padding:0 10px; }
+    .about-figure__img{ height:200px; border-radius:6px; }
+    .about-figure__caption{ font-size:0.95rem; }
+  }
+</style>
+
+
+
+
 
     <!-- FOOTER CONTACT -->
     <footer class="reveal">
